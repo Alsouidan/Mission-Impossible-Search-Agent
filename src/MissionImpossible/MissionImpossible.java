@@ -1,4 +1,9 @@
 package MissionImpossible;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+
 public class MissionImpossible {
 	State initialState;
 	Cell [][] grid;
@@ -14,6 +19,7 @@ public class MissionImpossible {
 	boolean [] isMemberSaved; // Saved means they are on submarine
 	int maximumCarry;
 	int numberOfMembers;
+	HashSet <State> visitedStates;
 	
 	public MissionImpossible() {	
 		genGrid();		
@@ -29,7 +35,7 @@ public class MissionImpossible {
 		grid[ethanRow][ethanColumn]=new Cell(new Ethan(),ethanRow,ethanColumn);
 		grid[submarineRow][submarineColumn]=new Cell(new Submarine(),submarineRow,submarineColumn);
 		for (int i=0;i<numberOfMembers;i++) {
-			grid[memberRow[i]][memberColumn[i]]=new Cell(new Member(memberHealth[i]),memberRow[i],memberColumn[i]);
+			grid[memberRow[i]][memberColumn[i]]=new Cell(new Member(),memberRow[i],memberColumn[i]);
 			
 		}
 	}
@@ -67,9 +73,55 @@ public class MissionImpossible {
         int min = 5; 
         int range = max - min + 1;
         String inputString="";
-        inputString+=(int)(Math.random() * range) + min+","; 
-        inputString+= (int)(Math.random() * range) + min+";";
+        int rowSize=(int)(Math.random() * range) + min;
+        int columnSize=(int)(Math.random() * range) + min;
+        inputString+=rowSize+","; 
+        inputString+= columnSize+min+";";
+        ArrayList<Occupant> arrayToBeShuffled=new ArrayList<Occupant>(rowSize*columnSize);
+        Ethan ethan=new Ethan();
+        arrayToBeShuffled.add(ethan);
+        Submarine submarine= new Submarine();
+        arrayToBeShuffled.add(new Submarine());
+        max=10;
+        min=5;
+        range = max - min + 1;
+        int numberOfMembers=(int)(Math.random() * range) + min;
+        max=99;
+        min=1;
+        range = max - min + 1;
+        Member[] membersInShuffledArray=new Member[numberOfMembers];
+        for(int i=0;i<numberOfMembers;i++) {
+        	membersInShuffledArray[i]=new Member();
+        	arrayToBeShuffled.add(membersInShuffledArray[i]);
+        }
+        Collections.shuffle(arrayToBeShuffled);        
+        int ethanIndex=arrayToBeShuffled.indexOf(ethan);
+        inputString+=ethanIndex/columnSize+",";
+        inputString+=ethanIndex%columnSize+";";
+        int submarineIndex=arrayToBeShuffled.indexOf(submarine);
+        inputString+=submarineIndex/columnSize+",";
+        inputString+=submarineIndex%columnSize+";";
+        String healthString="";
+        int memberIndex;
+        for (int i=0;i<numberOfMembers;i++) {
+        	memberIndex=arrayToBeShuffled.indexOf(membersInShuffledArray[i]);
+            inputString+=memberIndex/columnSize+",";
+            inputString+=memberIndex%columnSize+",";
+            healthString+=((Member)(membersInShuffledArray[i])).getHealth()+",";
+        }
         
+        // Removing comma at end and replacing it with a semi colon
+        inputString=inputString.substring(0, inputString.length()-1);
+        inputString+=";";
+        inputString+=healthString;
+        inputString=inputString.substring(0, inputString.length()-1);
+        inputString+=";";
+        max=numberOfMembers;
+        min=1;
+        range = max - min + 1;
+       inputString +=(int)(Math.random() * range) + min;
+        
+
         
         return inputString;
 

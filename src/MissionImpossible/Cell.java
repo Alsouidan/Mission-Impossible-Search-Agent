@@ -13,5 +13,7 @@ public class Cell {
 		this.row=row;
 		this.column=column;
 	}
-
+	public String toString() {
+		return occupant.toString();
+	}
 }
