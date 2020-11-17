@@ -10,6 +10,7 @@ public class STNode implements Comparable {
 	
 	
 	public STNode()  {
+	
 	}
 
 	
