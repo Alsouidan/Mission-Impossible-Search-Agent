@@ -125,4 +125,15 @@ public class MIState extends State {
 		}
 		return true;
 	}
+	public String toString() {
+		String str="";
+		str+=ethanRow+","+ethanColumn+";";
+		for(int i=0;i<numberOfMembers;i++) {
+			str+=memberRow[i]+","+memberColumn[i]+","+memberHealth[i]+","+isMemberSaved[i]+";";
+		}
+		str+=truckMembers.toString()+";";
+		str+=membersOnTruck;
+		return str;
+		
+	}
 }

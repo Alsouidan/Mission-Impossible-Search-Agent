@@ -5,12 +5,21 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.PriorityQueue;
+
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Node;
 
 import code.generic.STNode;
 import code.generic.SearchProblem;
 import code.generic.State;
 
 public class MissionImpossible extends SearchProblem {
+	public MissionImpossible(State initialState, State[] stateSpace, PriorityQueue<STNode> queue,
+			Operator[] operators) {
+		super(initialState, stateSpace, queue, operators);
+		// TODO Auto-generated constructor stub
+	}
+
 	static ArrayList<Occupant> arrayToBeShuffled = new ArrayList<Occupant>();
 	static Cell[][] field;
 	static int gridRows;
@@ -27,12 +36,10 @@ public class MissionImpossible extends SearchProblem {
 	static int numberOfMembers;
 	static int membersOnTruck;
 	static HashSet<Integer> truckMembers;
-	static HashSet<MIState> visitedStates;
 	static int healthGained;
 	static int memberAtEthan;
-	public MissionImpossible() {
-
-	}
+	static int expandedNodes;
+	static int idSoFar;
 
 	public static String solve(String grid, String strategy, boolean visualize) {
 
@@ -72,8 +79,7 @@ public class MissionImpossible extends SearchProblem {
 				field[i][j] = new Cell(1, j);
 			}
 		}
-		System.out.println(numberOfMembers);
-		System.out.println(arrayToBeShuffled);
+
 		for (int i = 0; i < numberOfMembers; i++) {
 			field[memberRow[i]][memberColumn[i]]
 					.setOccupant(arrayToBeShuffled.get((memberRow[i] * gridColumns) + memberColumn[i]));
@@ -88,8 +94,17 @@ public class MissionImpossible extends SearchProblem {
 			}
 			System.out.println("");
 		}
-		initialState = new MIState(field, ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, isMemberSaved,
-				truckMembers);
+		State initialState = new MIState(field, ethanRow, ethanColumn, memberRow, memberColumn, memberHealth,
+				isMemberSaved, truckMembers);
+		PriorityQueue<STNode> queue = new PriorityQueue<STNode>();
+		STNode initialNode = new MINode(initialState, idSoFar++, 0, 0, 0, null, null, 0);
+		queue.add(initialNode);
+		MissionImpossible missionImpossible = new MissionImpossible(initialState, null, queue, null);
+		missionImpossible.populateOperators();
+		missionImpossible.visitedStates=new HashSet<String>();
+		STNode solution = missionImpossible.generalSearchProcedure(missionImpossible, "DF");
+		System.out.println(solution.getId());
+
 		return null;
 	}
 
@@ -157,28 +172,46 @@ public class MissionImpossible extends SearchProblem {
 
 	public static void main(String[] args) {
 		solve(genGrid(), "", false);
-		MIState newState = (MIState) applyOperator(initialState, Operator.LEFT);
-		System.out.println("********************************************");
-		for (int i = 0; i < gridRows; i++) {
-			for (int j = 0; j < gridColumns; j++) {
-				System.out.print(newState.getField()[i][j]);
-			}
-			System.out.println("");
-		}
-		System.out.println("***************************************");
-		newState = (MIState) applyOperator(newState, Operator.CARRY);
-		for (int i = 0; i < gridRows; i++) {
-			for (int j = 0; j < gridColumns; j++) {
-				System.out.print(newState.getField()[i][j]);
-			}
-			System.out.println("");
-		}
 	}
+//	public static void main(String[] args) {
+//		solve(genGrid(), "", false);
+//		MIState newState = (MIState) applyOperator(initialState, Operator.LEFT);
+//		System.out.println("********************************************");
+//		for (int i = 0; i < gridRows; i++) {
+//			for (int j = 0; j < gridColumns; j++) {
+//				System.out.print(newState.getField()[i][j]);
+//			}
+//			System.out.println("");
+//		}
+//		System.out.println("***************************************");
+//		newState = (MIState) applyOperator(newState, Operator.CARRY);
+//		for (int i = 0; i < gridRows; i++) {
+//			for (int j = 0; j < gridColumns; j++) {
+//				System.out.print(newState.getField()[i][j]);
+//			}
+//			System.out.println("");
+//		}
+//	}
 
 	@Override
-	public boolean goalTest() {
+	public boolean goalTest(STNode node) {
+		expandedNodes++;
+		MINode miNode = (MINode) node;
+		MIState miState = (MIState) miNode.getState();
+//		System.out.println("*************************************************************");
+//		System.out.println(expandedNodes);
+//		for (int i = 0; i < numberOfMembers; i++) {
+//			System.out.println(miState.getIsMemberSaved()[i]);
+//		}
+//		System.out.println("*************************************************************");
+//		for (int i = 0; i < gridRows; i++) {
+//			for (int j = 0; j < gridColumns; j++) {
+//				System.out.print(miState.getField()[i][j]);
+//			}
+//			System.out.println("");
+//		}
 		for (int i = 0; i < numberOfMembers; i++) {
-			if (!isMemberSaved[i])
+			if (!miState.getIsMemberSaved()[i])
 				return false;
 		}
 		return true;
@@ -196,7 +229,8 @@ public class MissionImpossible extends SearchProblem {
 		return 0;
 	}
 
-	public static State applyOperator(State state, Operator operator) {
+	public STNode applyOperator(STNode node, Operator operator) {
+		State state = node.getState();
 		if (!isApplicable(state, operator)) {
 			return null;
 		}
@@ -388,6 +422,7 @@ public class MissionImpossible extends SearchProblem {
 			nextState.setEthanRow(currentState.getEthanRow());
 			nextState.setEthanColumn(currentState.getEthanColumn());
 			tempArr = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
+//			System.out.println(memberAtEthan);
 			tempArr[memberAtEthan] = -1;
 			nextState.setMemberColumn(tempArr);
 			tempArr = Arrays.copyOf(currentState.getMemberRow(), numberOfMembers);
@@ -445,8 +480,13 @@ public class MissionImpossible extends SearchProblem {
 			nextState.setMemberRow(tempArr);
 			tempHash = (HashSet<Integer>) currentState.getTruckMembers().clone();
 			boolean[] tempBoolArr = Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers);
-			tempHash.forEach(index -> tempBoolArr[index] = true);
+			tempHash.forEach(index -> {
+				System.out.println("Dropping");
+				tempBoolArr[index] = true;
+			});
+			tempHash.toString();
 			tempHash.clear();
+			nextState.setIsMemberSaved(tempBoolArr);
 			nextState.setMembersOnTruck(0);
 			nextState.setTruckMembers(tempHash);
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
@@ -488,7 +528,11 @@ public class MissionImpossible extends SearchProblem {
 			;
 			break;
 		}
-		return nextState;
+		if(visitedStates.contains(nextState.toString())) {
+			return null;
+		}
+		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, 0, node, operator,
+				node.getDepth() + 1);
 	}
 
 	public static boolean isApplicable(State state, Operator operator) {
@@ -511,9 +555,10 @@ public class MissionImpossible extends SearchProblem {
 				return false;
 			break;
 		case CARRY:
-			
-			memberAtEthan = findMember(currentState.getEthanRow(), currentState.getEthanColumn(),currentState);
-			System.out.println(memberAtEthan);
+			if(membersOnTruck==maximumCarry) {
+				return false;
+			}
+			memberAtEthan = findMember(currentState.getEthanRow(), currentState.getEthanColumn(), currentState);
 			if (memberAtEthan == -1)
 				return false;
 			break;
@@ -526,16 +571,9 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return true;
 	}
-	
+
 	public static int findMember(int x, int y, MIState currentState) { // gets index of member
 		for (int i = 0; i < numberOfMembers; i++) {
-			System.out.println("=========================");
-			System.out.println(currentState.getIsMemberSaved()[i]);
-			System.out.println(currentState.getMemberRow()[i]);
-			System.out.println(currentState.getMemberColumn()[i]);
-			System.out.println("Ethan");
-			System.out.println(x);
-			System.out.println(y);
 			if (!currentState.getIsMemberSaved()[i] && x == currentState.getMemberRow()[i]
 					&& y == currentState.getMemberColumn()[i]) {
 				return i;
