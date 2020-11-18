@@ -3,9 +3,9 @@ package code.generic;
 
 import code.mission.Operator;
 
-public class STNode implements Comparable {
+public abstract class STNode implements Comparable {
 	State state;
-	int cost;  //From root
+	int pathCost;  //From root
 	protected int costFromParent; //from parent
 	int heuristicCost;
 	protected STNode parent;
@@ -27,11 +27,11 @@ public class STNode implements Comparable {
 	}
 
 	public int getCost() {
-		return cost;
+		return pathCost;
 	}
 
-	public void setCost(int cost) {
-		this.cost = cost;
+	public void setCost(int pathCost) {
+		this.pathCost = pathCost;
 	}
 
 	public int getHeuristicCost() {

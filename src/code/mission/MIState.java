@@ -1,46 +1,63 @@
 package code.mission;
 
+import java.util.HashSet;
+
 //import java.util.HashMap;
-import code.generic.*;
+import code.generic.State;
+
 public class MIState extends State {
 //	HashMap <String,String> stateMap;
-	Cell[][] grid;
+	Cell[][] field;
 	int ethanRow;
 	int ethanColumn;
-	int submarineRow;
-	int submarineColumn;
 	int[] memberRow;
 	int[] memberColumn;
 	int[] memberHealth;
 	boolean[] isMemberSaved; // Saved means they are on submarine
-	int [] truckMembers;
+	HashSet<Integer> truckMembers;
+	int membersOnTruck;
 
-	public MIState(Cell[][] grid, int ethanRow, int ethanColumn, int submarineRow, int submarineColumn, int[] memberRow,
-			int[] memberColumn, int[] memberHealth, boolean[] isMemberSaved,
-			int[] truckMembers, int numberOfMembers) {
-		this.grid = grid;
+	public HashSet<Integer> getTruckMembers() {
+		return truckMembers;
+	}
+
+	public void setTruckMembers(HashSet<Integer> truckMembers) {
+		this.truckMembers = truckMembers;
+	}
+
+	public int getMembersOnTruck() {
+		return membersOnTruck;
+	}
+
+	public void setMembersOnTruck(int membersOnTruck) {
+		this.membersOnTruck = membersOnTruck;
+	}
+
+	public MIState(Cell[][] field, int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn,
+			int[] memberHealth, boolean[] isMemberSaved, HashSet<Integer> truckMembers) {
+		this.field = field;
 		this.ethanRow = ethanRow;
 		this.ethanColumn = ethanColumn;
-		this.submarineRow = submarineRow;
-		this.submarineColumn = submarineColumn;
 		this.memberRow = memberRow;
 		this.memberColumn = memberColumn;
 		this.memberHealth = memberHealth;
 		this.isMemberSaved = isMemberSaved;
 		this.truckMembers = truckMembers;
-		this.numberOfMembers = numberOfMembers;
+
 	}
 
 	public MIState() {
 
 	}
 
-	public Cell[][] getGrid() {
-		return grid;
+
+
+	public Cell[][] getField() {
+		return field;
 	}
 
-	public void setGrid(Cell[][] grid) {
-		this.grid = grid;
+	public void setField(Cell[][] field) {
+		this.field = field;
 	}
 
 	public int getEthanRow() {
@@ -57,22 +74,6 @@ public class MIState extends State {
 
 	public void setEthanColumn(int ethanColumn) {
 		this.ethanColumn = ethanColumn;
-	}
-
-	public int getSubmarineRow() {
-		return submarineRow;
-	}
-
-	public void setSubmarineRow(int submarineRow) {
-		this.submarineRow = submarineRow;
-	}
-
-	public int getSubmarineColumn() {
-		return submarineColumn;
-	}
-
-	public void setSubmarineColumn(int submarineColumn) {
-		this.submarineColumn = submarineColumn;
 	}
 
 	public int[] getMemberRow() {
@@ -108,25 +109,18 @@ public class MIState extends State {
 	}
 
 
-	public int getNumberOfMembers() {
-		return numberOfMembers;
-	}
-
-	public void setNumberOfMembers(int numberOfMembers) {
-		this.numberOfMembers = numberOfMembers;
-	}
-
 	int numberOfMembers;
 
 	public MIState(Cell[][] grid, int ethan) {
 
 	}
+
 //	public String getFromState(String key) {
 //		return stateMap.get(key);
 //	}
 	public boolean isGoalState() {
-		for(int i=0;i<numberOfMembers;i++) {
-			if(!isMemberSaved[i])
+		for (int i = 0; i < numberOfMembers; i++) {
+			if (!isMemberSaved[i])
 				return false;
 		}
 		return true;

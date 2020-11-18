@@ -1,5 +1,5 @@
 package code.generic;
 
-public class State {
+public abstract class State {
 
 }

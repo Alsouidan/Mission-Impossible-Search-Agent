@@ -11,9 +11,9 @@ public class Member extends Occupant {
 		this.health = health;
 	}
 
-//	public Member(int health) {
-//		this.health=health;
-//	}
+	public Member(int health) {
+		this.health=health;
+	}
 	public Member() {
 
 		this.health = (int) (Math.random() * 99) + 1;

@@ -2,6 +2,15 @@ package code.mission;
 
 public class Cell {
 	Occupant occupant;
+	Occupant occupant2;
+	public Occupant getOccupant2() {
+		return occupant2;
+	}
+
+	public void setOccupant2(Occupant occupant2) {
+		this.occupant2 = occupant2;
+	}
+
 	int row;
 	int column;
 
@@ -17,10 +26,18 @@ public class Cell {
 	}
 
 	public String toString() {
+		String str="";
 		if (occupant == null) {
 			return "-";
 		}
-		return occupant.toString();
+		str+=occupant.toString();
+		if(occupant2==null) {
+			return str;
+		}
+		else {
+			str+="/"+occupant2.toString();
+		}
+		return str;
 	}
 
 	public Occupant getOccupant() {
