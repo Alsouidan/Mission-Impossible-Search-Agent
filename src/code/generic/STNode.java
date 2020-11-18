@@ -1,19 +1,22 @@
-package MissionImpossible;
+package code.generic;
+
+
+import code.mission.Operator;
 
 public class STNode implements Comparable {
 	State state;
-	int cost;
+	int cost;  //From root
+	protected int costFromParent; //from parent
 	int heuristicCost;
-	STNode parent;
-	Operator operatorFromParent;
+	protected STNode parent;
+	Operator operator;
 	int depth;
-	
-	
-	public STNode()  {
-	
+	public int getCostFromRoot() {
+		if(parent==null) {
+			return 0;
+		}
+		return costFromParent+parent.getCostFromRoot();
 	}
-
-	
 	
 	public State getState() {
 		return state;
@@ -62,5 +65,4 @@ public class STNode implements Comparable {
 	 }
 	 return this.parent.getNthAncestor(--n);
  } 
-
 }

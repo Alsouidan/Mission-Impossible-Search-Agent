@@ -1,4 +1,4 @@
-package MissionImpossible;
+package code.mission;
 
 public abstract class Occupant {
 

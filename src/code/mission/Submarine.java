@@ -1,4 +1,4 @@
-package MissionImpossible;
+package code.mission;
 
 public class Submarine extends Occupant {
 	int count;

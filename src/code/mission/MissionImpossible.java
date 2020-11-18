@@ -1,34 +1,37 @@
-package MissionImpossible;
+package code.mission;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
-public class MissionImpossible extends GeneralSearchProblem {
-	static ArrayList<Occupant> arrayToBeShuffled = new ArrayList<Occupant>();
+import code.generic.STNode;
+import code.generic.SearchProblem;
 
+public class MissionImpossible extends SearchProblem {
+	static ArrayList<Occupant> arrayToBeShuffled = new ArrayList<Occupant>();
+	static Cell[][] field ;
+	static int gridRows ;
+	static int gridColumns ;
+	static int ethanRow ;
+	static int ethanColumn ;
+	static int submarineRow;
+	static int submarineColumn;
+	static int[] memberRow ;
+	static int[] memberColumn;
+	static int[] memberHealth;
+	static boolean[] isMemberSaved; // Saved means they are on submarine
+	static int maximumCarry;
+	static int numberOfMembers ;
+	static HashSet<MIState> visitedStates;
+	static PriorityQueue queue;
 	public MissionImpossible() {
 
 	}
 
 	public static String solve(String grid, String strategy, boolean visualize) {
-		State initialState = null;
-		Cell[][] field = null;
-		int gridRows = -1;
-		int gridColumns = -1;
-		int ethanRow = -1;
-		int ethanColumn = -1;
-		int submarineRow = -1;
-		int submarineColumn = -1;
-		int[] memberRow = null;
-		int[] memberColumn = null;
-		int[] memberHealth = null;
-		boolean[] isMemberSaved = null; // Saved means they are on submarine
-		int maximumCarry = -1;
-		int numberOfMembers = -1;
-		HashSet<State> visitedStates;
-		PriorityQueue queue;
+		
+		
 //		****************************************************()		
 
 		System.out.println(grid);
@@ -84,7 +87,7 @@ public class MissionImpossible extends GeneralSearchProblem {
 			}
 			System.out.println("");
 		}
-		initialState = new State(field, ethanRow, ethanColumn, submarineRow, submarineColumn, memberRow, memberColumn,
+		initialState = new MIState(field, ethanRow, ethanColumn, submarineRow, submarineColumn, memberRow, memberColumn,
 				memberHealth, isMemberSaved, truckMembers, numberOfMembers);
 		return null;
 	}
@@ -153,5 +156,28 @@ public class MissionImpossible extends GeneralSearchProblem {
 
 	public static void main(String[] args) {
 	solve(genGrid(),"",false);
+	}
+
+	
+
+	@Override
+	public boolean goalTest() {
+		for(int i=0;i<numberOfMembers;i++) {
+		 if(!isMemberSaved[i])
+			 return false;
+		}
+		return true;
+		}
+	
+
+	@Override
+	public void populateOperators() {
+		operators= new Operator[]{Operator.UP,Operator.DOWN,Operator.RIGHT,Operator.LEFT,Operator.CARRY,Operator.DROP};
+	}
+
+	@Override
+	public int calculateCostOfNode(STNode node) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -1,8 +1,8 @@
-package MissionImpossible;
+package code.mission;
 
 //import java.util.HashMap;
-
-public class State {
+import code.generic.*;
+public class MIState extends State {
 //	HashMap <String,String> stateMap;
 	Cell[][] grid;
 	int ethanRow;
@@ -15,7 +15,7 @@ public class State {
 	boolean[] isMemberSaved; // Saved means they are on submarine
 	int [] truckMembers;
 
-	public State(Cell[][] grid, int ethanRow, int ethanColumn, int submarineRow, int submarineColumn, int[] memberRow,
+	public MIState(Cell[][] grid, int ethanRow, int ethanColumn, int submarineRow, int submarineColumn, int[] memberRow,
 			int[] memberColumn, int[] memberHealth, boolean[] isMemberSaved,
 			int[] truckMembers, int numberOfMembers) {
 		this.grid = grid;
@@ -31,7 +31,7 @@ public class State {
 		this.numberOfMembers = numberOfMembers;
 	}
 
-	public State() {
+	public MIState() {
 
 	}
 
@@ -118,7 +118,7 @@ public class State {
 
 	int numberOfMembers;
 
-	public State(Cell[][] grid, int ethan) {
+	public MIState(Cell[][] grid, int ethan) {
 
 	}
 //	public String getFromState(String key) {
