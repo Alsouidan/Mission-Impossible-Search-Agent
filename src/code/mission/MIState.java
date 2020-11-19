@@ -7,15 +7,16 @@ import code.generic.State;
 
 public class MIState extends State {
 //	HashMap <String,String> stateMap;
+	String state;
 	Cell[][] field;
-	int ethanRow;
-	int ethanColumn;
-	int[] memberRow;
-	int[] memberColumn;
-	int[] memberHealth;
-	boolean[] isMemberSaved; // Saved means they are on submarine
-	HashSet<Integer> truckMembers;
-	int membersOnTruck;
+//	int ethanRow;
+//	int ethanColumn;
+//	int[] memberRow;
+//	int[] memberColumn;
+//	int[] memberHealth;
+//	boolean[] isMemberSaved; // Saved means they are on submarine
+//	HashSet<Integer> truckMembers;
+//	int membersOnTruck;
 
 	public HashSet<Integer> getTruckMembers() {
 		return truckMembers;
@@ -33,16 +34,13 @@ public class MIState extends State {
 		this.membersOnTruck = membersOnTruck;
 	}
 
-	public MIState(Cell[][] field, int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn,
+	public String returnString(Cell[][] field, int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn,
 			int[] memberHealth, boolean[] isMemberSaved, HashSet<Integer> truckMembers) {
-		this.field = field;
-		this.ethanRow = ethanRow;
-		this.ethanColumn = ethanColumn;
-		this.memberRow = memberRow;
-		this.memberColumn = memberColumn;
-		this.memberHealth = memberHealth;
-		this.isMemberSaved = isMemberSaved;
-		this.truckMembers = truckMembers;
+		return null;
+	}
+
+	public MIState(String state) {
+		this.state=state;
 
 	}
 
@@ -50,17 +48,16 @@ public class MIState extends State {
 
 	}
 
+//	public Cell[][] getField() {
+//		return field;
+//	}
 
-
-	public Cell[][] getField() {
-		return field;
-	}
-
-	public void setField(Cell[][] field) {
-		this.field = field;
-	}
+//	public void setField(Cell[][] field) {
+//		this.field = field;
+//	}
 
 	public int getEthanRow() {
+		
 		return ethanRow;
 	}
 
@@ -108,8 +105,6 @@ public class MIState extends State {
 		this.isMemberSaved = isMemberSaved;
 	}
 
-
-
 	public MIState(Cell[][] grid, int ethan) {
 
 	}
@@ -124,14 +119,14 @@ public class MIState extends State {
 		}
 		return true;
 	}
+
 	public String toString() {
-		String str="";
-		str+=ethanRow+","+ethanColumn+";";
-		for(int i=0;i<memberColumn.length;i++) {
-			str+=memberRow[i]+","+memberColumn[i]+","+memberHealth[i]+","+isMemberSaved[i]+";";
+		String str = "";
+		str += ethanRow + "," + ethanColumn + ";";
+		for (int i = 0; i < memberColumn.length; i++) {
+			str += memberRow[i] + "," + memberColumn[i] + "," + memberHealth[i] + "," + isMemberSaved[i] + ";";
 		}
-		str+=truckMembers.toString()+";";
-		str+=membersOnTruck;
+		str += truckMembers.toString() + ";";
 		return str;
 		
 	}
