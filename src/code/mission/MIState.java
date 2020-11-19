@@ -1,13 +1,15 @@
 package code.mission;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 //import java.util.HashMap;
 import code.generic.State;
 
 public class MIState extends State {
 //	HashMap <String,String> stateMap;
-	String state;
 	Cell[][] field;
 //	int ethanRow;
 //	int ethanColumn;
@@ -18,30 +20,33 @@ public class MIState extends State {
 //	HashSet<Integer> truckMembers;
 //	int membersOnTruck;
 
-	public HashSet<Integer> getTruckMembers() {
-		return truckMembers;
+	public String returnString(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
+			int[] isMemberSaved, ArrayList<Integer> truckMembers) {
+		String str = "";
+		String memberRowString = "";
+		String memberColummString = "";
+		String memberHealthString = "";
+		String isMemberSavedString = "";
+		str += ethanRow + "," + ethanColumn + ";";
+		memberColummString = (Arrays.toString(memberColumn)).replaceAll("[\\[\\]\\s]", "") + ";";
+		memberRowString = (Arrays.toString(memberRow)).replaceAll("[\\[\\]\\s]", "") + ";";
+		memberHealthString = (Arrays.toString(memberHealth)).replaceAll("[\\[\\]\\s]", "") + ";";
+		isMemberSavedString = (Arrays.toString(isMemberSaved)).replaceAll("[\\[\\]\\s]", "") + ";";
+		if(truckMembers.size()==0) {
+			str += memberRowString + memberColummString + memberHealthString + isMemberSavedString
+					+ "e"; //e for empty	
+		}
+		else {
+		str += memberRowString + memberColummString + memberHealthString + isMemberSavedString
+				+ truckMembers.toString().replaceAll("[\\[\\]\\s]", "");
+		}
+		return str;
 	}
 
-	public void setTruckMembers(HashSet<Integer> truckMembers) {
-		this.truckMembers = truckMembers;
-	}
-
-	public int getMembersOnTruck() {
-		return membersOnTruck;
-	}
-
-	public void setMembersOnTruck(int membersOnTruck) {
-		this.membersOnTruck = membersOnTruck;
-	}
-
-	public String returnString(Cell[][] field, int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn,
-			int[] memberHealth, boolean[] isMemberSaved, HashSet<Integer> truckMembers) {
-		return null;
-	}
-
-	public MIState(String state) {
-		this.state=state;
-
+	public MIState(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
+			int[] isMemberSaved, ArrayList<Integer> truckMembers) {
+		this.state = this.returnString(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, isMemberSaved,
+				truckMembers);
 	}
 
 	public MIState() {
@@ -57,77 +62,59 @@ public class MIState extends State {
 //	}
 
 	public int getEthanRow() {
-		
-		return ethanRow;
-	}
-
-	public void setEthanRow(int ethanRow) {
-		this.ethanRow = ethanRow;
+		return Integer.parseInt(state.split(";")[0].split(",")[0]);
 	}
 
 	public int getEthanColumn() {
-		return ethanColumn;
-	}
-
-	public void setEthanColumn(int ethanColumn) {
-		this.ethanColumn = ethanColumn;
+		return Integer.parseInt(state.split(";")[0].split(",")[1]);
 	}
 
 	public int[] getMemberRow() {
-		return memberRow;
-	}
 
-	public void setMemberRow(int[] memberRow) {
-		this.memberRow = memberRow;
+		int[] intArray = Stream.of(state.split(";")[1].split(",")).mapToInt(Integer::parseInt).toArray();
+		return intArray;
 	}
 
 	public int[] getMemberColumn() {
-		return memberColumn;
-	}
-
-	public void setMemberColumn(int[] memberColumn) {
-		this.memberColumn = memberColumn;
+		int[] intArray = Stream.of(state.split(";")[2].split(",")).mapToInt(Integer::parseInt).toArray();
+		return intArray;
 	}
 
 	public int[] getMemberHealth() {
+		int[] memberHealth = Stream.of(state.split(";")[3].split(",")).mapToInt(Integer::parseInt).toArray();
 		return memberHealth;
 	}
 
-	public void setMemberHealth(int[] memberHealth) {
-		this.memberHealth = memberHealth;
-	}
-
-	public boolean[] getIsMemberSaved() {
+	public int[] getIsMemberSaved() {
+		int[] isMemberSaved = Stream.of(state.split(";")[4].split(",")).mapToInt(Integer::parseInt).toArray();
 		return isMemberSaved;
 	}
 
-	public void setIsMemberSaved(boolean[] isMemberSaved) {
-		this.isMemberSaved = isMemberSaved;
+	public ArrayList<Integer> getTruckMembers() {
+		String splitted=state.split(";")[5];
+		if(splitted.equals("e")) {
+			return new ArrayList<Integer>();
+		}
+		else {
+		int[] truckMembersInt = Stream.of(splitted.split(",")).mapToInt(Integer::parseInt).toArray();
+		ArrayList<Integer> truckMembers = new ArrayList<Integer>();
+		for (int i : truckMembersInt) {
+			truckMembers.add(i);
+		}
+		return truckMembers;
+		}
 	}
 
-	public MIState(Cell[][] grid, int ethan) {
-
+	public int getMembersOnTruck() {
+		return getTruckMembers().size();
 	}
 
 //	public String getFromState(String key) {
 //		return stateMap.get(key);
 //	}
-	public boolean isGoalState() {
-		for (int i = 0; i < memberColumn.length; i++) {
-			if (!isMemberSaved[i])
-				return false;
-		}
-		return true;
-	}
+public static void main (String [] args) {
+	String string="2,3;1,2,3;1,2,3;1,2,3;0,0,0;";
+	int[] isMemberSaved = Stream.of(string.split(";")[5].split(",")).mapToInt(Integer::parseInt).toArray();
 
-	public String toString() {
-		String str = "";
-		str += ethanRow + "," + ethanColumn + ";";
-		for (int i = 0; i < memberColumn.length; i++) {
-			str += memberRow[i] + "," + memberColumn[i] + "," + memberHealth[i] + "," + isMemberSaved[i] + ";";
-		}
-		str += truckMembers.toString() + ";";
-		return str;
-		
-	}
+}
 }

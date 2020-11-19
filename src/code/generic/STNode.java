@@ -10,7 +10,7 @@ public abstract class STNode implements Comparable {
 	protected int costFromParent; //from parent
 	int heuristicCost;
 	protected STNode parent;
-	Operator operator;
+	Operator operator; //applied on parent to get this node
 	public int getId() {
 		return id;
 	}
@@ -132,4 +132,9 @@ public STNode getNthAncestor(int n) {
 	 }
 	 return this.parent.getNthAncestor(--n);
  } 
+
+public String getPlan() {
+	// Abougabal
+	return null;
+}
 }
