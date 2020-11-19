@@ -24,11 +24,13 @@ public abstract boolean goalTest(STNode node);
 public abstract void populateOperators();
 public abstract int pathCost(STNode node); 
 public abstract STNode applyOperator(STNode node,Operator operator);
+
 public STNode generalSearchProcedure(SearchProblem searchProblem,String strategy) {
 	STNode curr=null;
 	STNode tempNode=null;
 	while(!queue.isEmpty()) {
 		curr=queue.remove();
+		visitedStates.add(curr.getState().toString());
 		if(goalTest(curr)) {
 			return curr;
 		}

@@ -109,7 +109,6 @@ public class MIState extends State {
 	}
 
 
-	int numberOfMembers;
 
 	public MIState(Cell[][] grid, int ethan) {
 
@@ -119,7 +118,7 @@ public class MIState extends State {
 //		return stateMap.get(key);
 //	}
 	public boolean isGoalState() {
-		for (int i = 0; i < numberOfMembers; i++) {
+		for (int i = 0; i < memberColumn.length; i++) {
 			if (!isMemberSaved[i])
 				return false;
 		}
@@ -128,7 +127,7 @@ public class MIState extends State {
 	public String toString() {
 		String str="";
 		str+=ethanRow+","+ethanColumn+";";
-		for(int i=0;i<numberOfMembers;i++) {
+		for(int i=0;i<memberColumn.length;i++) {
 			str+=memberRow[i]+","+memberColumn[i]+","+memberHealth[i]+","+isMemberSaved[i]+";";
 		}
 		str+=truckMembers.toString()+";";

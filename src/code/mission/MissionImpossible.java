@@ -103,13 +103,17 @@ public class MissionImpossible extends SearchProblem {
 		missionImpossible.populateOperators();
 		missionImpossible.visitedStates=new HashSet<String>();
 		STNode solution = missionImpossible.generalSearchProcedure(missionImpossible, "DF");
+		if(solution==null) {
+			System.out.println("Failure");
+		}
+		else
 		System.out.println(solution.getId());
 
 		return null;
 	}
 
 	public static String genGrid() {
-		int max = 15;
+		int max = 5;
 		int min = 5;
 		int range = max - min + 1;
 		String grid = "";
@@ -196,6 +200,7 @@ public class MissionImpossible extends SearchProblem {
 	@Override
 	public boolean goalTest(STNode node) {
 		expandedNodes++;
+		System.out.println(node.getId());
 		MINode miNode = (MINode) node;
 		MIState miState = (MIState) miNode.getState();
 //		System.out.println("*************************************************************");
@@ -234,6 +239,7 @@ public class MissionImpossible extends SearchProblem {
 		if (!isApplicable(state, operator)) {
 			return null;
 		}
+		System.out.println(operator);
 		MIState currentState = (MIState) state;
 		MIState nextState = new MIState();
 		int[] tempHealth;
@@ -529,6 +535,7 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		}
 		if(visitedStates.contains(nextState.toString())) {
+			System.out.println(nextState.toString());
 			return null;
 		}
 		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, 0, node, operator,
