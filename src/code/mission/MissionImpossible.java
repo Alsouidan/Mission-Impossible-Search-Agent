@@ -183,9 +183,10 @@ public class MissionImpossible extends SearchProblem {
 	public static void main(String[] args) {
 		String grid5 = "5,5;2,1;1,0;1,3,4,2,4,1,3,1;54,31,39,98;2";
 		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
+		String grid10 = "10,10;6,3;4,8;9,1,2,4,4,0,3,9,6,4,3,4,0,5,1,6,1,9;97,49,25,17,94,3,96,35,98;3";
 
 //		solve(genGrid(), "UCS", false);
-		System.out.println(solve(grid5, "UC", false));
+		System.out.println(solve(grid10, "BF", false));
 	}
 //	public static void main(String[] args) {
 //		solve(genGrid(), "", false);
@@ -275,8 +276,10 @@ public class MissionImpossible extends SearchProblem {
 			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
+			
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -327,7 +330,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -370,7 +373,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -413,7 +416,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -461,13 +464,12 @@ public class MissionImpossible extends SearchProblem {
 //			System.out.println("Carrying");
 //			System.out.println(Arrays.toString(tempMemberRow));
 //			System.out.println(Arrays.toString(tempMemberColumn));
-			String myName = "domanokz";
-			tempTruckMembers=tempTruckMembers.substring(0,memberAtEthan)+'1'+myName.substring(memberAtEthan+1);
+			tempTruckMembers=tempTruckMembers.substring(0,memberAtEthan)+'1'+tempTruckMembers.substring(memberAtEthan+1);
 //			System.out.println(tempTruckMembers);
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -519,7 +521,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
+				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
