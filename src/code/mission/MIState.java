@@ -19,9 +19,17 @@ public class MIState extends State {
 //	boolean[] isMemberSaved; // Saved means they are on submarine
 //	HashSet<Integer> truckMembers;
 //	int membersOnTruck;
-
+	public String getStateForVisitedStates() {
+		String stateforVisitedStates=";";
+		String [] splitted=this.getState().split(";");
+		splitted[3]="";
+		for(String str : splitted) {
+			stateforVisitedStates+=str+=";";
+		}
+		return stateforVisitedStates;
+	}
 	public String returnString(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
-			int[] isMemberSaved, ArrayList<Integer> truckMembers) {
+		int[] isMemberSaved, ArrayList<Integer> truckMembers) {
 		String str = "";
 		String memberRowString = "";
 		String memberColummString = "";
@@ -114,7 +122,13 @@ public class MIState extends State {
 //	}
 public static void main (String [] args) {
 	String string="2,3;1,2,3;1,2,3;1,2,3;0,0,0;";
-	int[] isMemberSaved = Stream.of(string.split(";")[5].split(",")).mapToInt(Integer::parseInt).toArray();
-
+	String stateforVisitedStates="";
+	String [] splitted=string.split(";");
+	splitted[3]="";
+	for(String str : splitted) {
+		System.out.println(str);
+		stateforVisitedStates+=str+";";
+	}
+System.out.println(stateforVisitedStates);
 }
 }

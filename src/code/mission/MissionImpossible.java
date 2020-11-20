@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
+import code.generic.NodeCostComparator;
 import code.generic.NodeIdComparator;
 import code.generic.STNode;
 import code.generic.SearchProblem;
@@ -36,7 +37,6 @@ public class MissionImpossible extends SearchProblem {
 	static ArrayList<Integer> truckMembers;
 	static int healthGained;
 	static int memberAtEthan;
-	static int expandedNodes;
 	static int idSoFar;
 
 	public static String solve(String grid, String strategy, boolean visualize) {
@@ -92,6 +92,7 @@ public class MissionImpossible extends SearchProblem {
 //			}
 //			System.out.println("");
 //		}
+//		15,15;0,0;0,1;0,2,0,3,0,4,0,5,0,6;91,5,58,47,85;10
 		State initialState = new MIState(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, isMemberSaved,
 				truckMembers);
 		PriorityQueue<STNode> queue = null;
@@ -102,25 +103,29 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case "BF":
 			queue = new PriorityQueue<STNode>();
+			break;
 		case "IDF":
 			queue = new PriorityQueue<STNode>(new NodeIdComparator());
 
 			break;
+		case "UCS":
+			queue = new PriorityQueue<STNode>(new NodeCostComparator());
+			break;
 		}
-		STNode initialNode = new MINode(initialState, idSoFar++, 0, 0, 0, null, null, 0);
+		STNode initialNode = new MINode(initialState, idSoFar++, 0, 0, 0, null, null, 0,getDead((MIState) initialState));
 		queue.add(initialNode);
 		MissionImpossible missionImpossible = new MissionImpossible(initialState, null, queue, null);
 		missionImpossible.populateOperators();
 		missionImpossible.visitedStates = new HashSet<String>();
-		missionImpossible.visitedStates.add(initialState.getState());
-		STNode solution = missionImpossible.generalSearchProcedure(missionImpossible, "DF");
+		missionImpossible.visitedStates.add(((MIState) initialState).getStateForVisitedStates());
+		STNode solution = missionImpossible.generalSearchProcedure(missionImpossible, strategy);
 		if (solution == null) {
 			System.out.println("Failure");
-		} else
-		{
+		} else {
 			System.out.println(solution.getId());
 			System.out.println(solution.getPlan());
-			System.out.println(getDead((MINode) solution));
+			System.out.println(solution.getDepth());
+			System.out.println(getDead((MIState) solution.getState()));
 		}
 		return null;
 	}
@@ -132,8 +137,8 @@ public class MissionImpossible extends SearchProblem {
 		String grid = "";
 		int rowSize = (int) (Math.random() * range) + min;
 		int columnSize = (int) (Math.random() * range) + min;
-//		int rowSize = 15;
-//		int columnSize = 15;
+//		 rowSize = 15;
+//		 columnSize = 15;
 		grid += rowSize + ",";
 		grid += columnSize + ";";
 		System.out.println(grid);
@@ -146,6 +151,7 @@ public class MissionImpossible extends SearchProblem {
 		min = 5;
 		range = max - min + 1;
 		int numberOfMembers = (int) (Math.random() * range) + min;
+//		numberOfMembers=7;
 		max = 99;
 		min = 1;
 		range = max - min + 1;
@@ -171,6 +177,7 @@ public class MissionImpossible extends SearchProblem {
 			memberIndex = arrayToBeShuffled.indexOf(membersInShuffledArray[i]);
 			grid += memberIndex / columnSize + ",";
 			grid += memberIndex % columnSize + ",";
+//			healthString+=50+",";
 			healthString += ((Member) (membersInShuffledArray[i])).getHealth() + ",";
 		}
 
@@ -184,14 +191,16 @@ public class MissionImpossible extends SearchProblem {
 		min = 1;
 		range = max - min + 1;
 		grid += (int) (Math.random() * range) + min; // maxXarry
-//		grid += 10;
+//		grid += 6;
 
 		return grid;
 
 	}
 
 	public static void main(String[] args) {
-		solve(genGrid(), "IDF", false);
+		String grid5 = "5,5;2,1;1,0;1,3,4,2,4,1,3,1;54,31,39,98;2";
+//		solve(genGrid(), "UCS", false);
+		solve(grid5, "IDF", false);
 	}
 //	public static void main(String[] args) {
 //		solve(genGrid(), "", false);
@@ -258,6 +267,7 @@ public class MissionImpossible extends SearchProblem {
 	public STNode applyOperator(STNode node, Operator operator) {
 		State state = node.getState();
 		if (!isApplicable(state, operator)) {
+//			System.out.println("Not appl");
 			return null;
 		}
 //		System.out.println(operator);
@@ -554,52 +564,70 @@ public class MissionImpossible extends SearchProblem {
 		}
 		MIState nextState = new MIState(tempEthanRow, tempEthanColumn, tempMemberRow, tempMemberColumn, tempHealth,
 				tempIsMemberSaved, tempTruckMembers);
-		if (visitedStates.contains(nextState.getState())) {
+		if (visitedStates.contains(nextState.getStateForVisitedStates())) {
 //			System.out.println(nextState.getState());
 			return null;
 		} else {
-			visitedStates.add(nextState.getState());
+			visitedStates.add(nextState.getStateForVisitedStates());
 		}
-
+//		System.out.println("Making a node");
 		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, 0, node, operator,
-				node.getDepth() + 1);
+				node.getDepth() + 1,getDead(nextState));
 	}
 
 	public static boolean isApplicable(State state, Operator operator) {
 		MIState currentState = (MIState) state;
+//		System.out.println(currentState.getState());
+//		System.out.println(operator);
 		switch (operator) {
 		case UP:
 			if (currentState.getEthanRow() == 0)
 				return false;
-			break;
+			else
+				return true;
+			
 		case DOWN:
 			if (currentState.getEthanRow() == gridRows - 1)
 				return false;
-			break;
+			else
+				return true;
 		case LEFT:
-			if (currentState.getEthanColumn() == 0)
+			if (currentState.getEthanColumn() == 0) 
 				return false;
-			break;
+			else
+				return true;
 		case RIGHT:
+//			System.out.println("I am going right");
 			if (currentState.getEthanColumn() == gridColumns - 1)
 				return false;
-			break;
+			else {
+//				System.out.println("returning true");
+				return true
+						;}
 		case CARRY:
 			if (currentState.getMembersOnTruck() == maximumCarry) {
 				return false;
 			}
-			memberAtEthan = findMember(currentState.getEthanRow(), currentState.getEthanColumn(), currentState);
-			if (memberAtEthan == -1)
-				return false;
-			break;
+			else {
+				memberAtEthan = findMember(currentState.getEthanRow(), currentState.getEthanColumn(), currentState);
+				if (memberAtEthan == -1)
+					return false;
+				else
+					return true;
+			}
+			
+			
+		
 		case DROP:
 			if (!(currentState.getEthanColumn() == submarineColumn && currentState.getEthanRow() == submarineRow)
 					|| currentState.getMembersOnTruck() == 0)
 				return false;
-			break;
+			else
+				return true;
+			
+		default:return true;
 
 		}
-		return true;
 	}
 
 	public static int findMember(int x, int y, MIState currentState) { // gets index of member
@@ -611,14 +639,12 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return -1;
 	}
-	public static int getDead(MINode node)
-	{
+
+	public static int getDead(MIState state) {
 		int counter = 0;
-		int[] allMemHealth = ((MIState) node.getState()).getMemberHealth();
-		for (int i = 0; i < allMemHealth.length; i++)
-		{
-			if (allMemHealth[i] == 100)
-			{
+		int[] allMemHealth = state.getMemberHealth();
+		for (int i = 0; i < allMemHealth.length; i++) {
+			if (allMemHealth[i] == 100) {
 				counter++;
 			}
 		}

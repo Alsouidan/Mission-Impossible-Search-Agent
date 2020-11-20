@@ -10,6 +10,7 @@ public abstract class STNode implements Comparable {
 	protected int costFromParent; //from parent
 	int heuristicCost;
 	protected STNode parent;
+	protected abstract int compareToWithCost(STNode otherNode);
 	Operator operator; //applied on parent to get this node
 	public int getId() {
 		return id;

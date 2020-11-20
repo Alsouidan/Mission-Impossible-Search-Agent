@@ -13,8 +13,10 @@ public abstract class SearchProblem {
 	protected PriorityQueue<STNode> queue;
 	protected ArrayList<Operator> operators;
 	protected HashSet<String> visitedStates;
+	protected static int expandedNodes;
 
-	public SearchProblem(State initialState, State[] stateSpace, PriorityQueue<STNode> queue, ArrayList<Operator> operators) {
+	public SearchProblem(State initialState, State[] stateSpace, PriorityQueue<STNode> queue,
+			ArrayList<Operator> operators) {
 		super();
 		this.initialState = initialState;
 		this.stateSpace = stateSpace;
@@ -36,19 +38,24 @@ public abstract class SearchProblem {
 		int iterativeDepthSearhCounter = 0;
 		if (strategy.equals("IDF")) {
 			STNode root = queue.remove();
+			System.out.println(root);
 			while (true) {
+				System.out.println("Loop number: " + iterativeDepthSearhCounter);
 				queue = new PriorityQueue<STNode>(new NodeIdComparator());
 				queue.add(root);
 				while (!queue.isEmpty()) {
+//					System.out.println("Removing head");
 					curr = queue.remove();
 //			visitedStates.add(curr.getState().getState());
 					if (goalTest(curr)) {
 						return curr;
 					}
-					Collections.shuffle(operators);
+//					Collections.shuffle(operators);
 					for (int i = 0; i < operators.size(); i++) {
 						tempNode = applyOperator(curr, operators.get(i));
+
 						if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
+//							System.out.println("Adding node");
 							queue.add(tempNode);
 						}
 
@@ -56,6 +63,7 @@ public abstract class SearchProblem {
 
 				}
 				iterativeDepthSearhCounter++;
+				visitedStates.clear();
 			}
 		} else {
 			while (!queue.isEmpty()) {
@@ -64,7 +72,7 @@ public abstract class SearchProblem {
 				if (goalTest(curr)) {
 					return curr;
 				}
-				Collections.shuffle(operators);
+//				Collections.shuffle(operators);
 				for (int i = 0; i < operators.size(); i++) {
 					tempNode = applyOperator(curr, operators.get(i));
 					if (strategy.equals("IDF")) {
