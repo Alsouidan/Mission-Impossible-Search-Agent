@@ -1,5 +1,7 @@
 package code.generic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
@@ -9,10 +11,10 @@ public abstract class SearchProblem {
 	protected State initialState;
 	protected State[] stateSpace;
 	protected PriorityQueue<STNode> queue;
-	protected Operator[] operators;
+	protected ArrayList<Operator> operators;
 	protected HashSet<String> visitedStates;
 
-	public SearchProblem(State initialState, State[] stateSpace, PriorityQueue<STNode> queue, Operator[] operators) {
+	public SearchProblem(State initialState, State[] stateSpace, PriorityQueue<STNode> queue, ArrayList<Operator> operators) {
 		super();
 		this.initialState = initialState;
 		this.stateSpace = stateSpace;
@@ -43,8 +45,9 @@ public abstract class SearchProblem {
 					if (goalTest(curr)) {
 						return curr;
 					}
-					for (int i = 0; i < operators.length; i++) {
-						tempNode = applyOperator(curr, operators[i]);
+					Collections.shuffle(operators);
+					for (int i = 0; i < operators.size(); i++) {
+						tempNode = applyOperator(curr, operators.get(i));
 						if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
 							queue.add(tempNode);
 						}
@@ -54,29 +57,29 @@ public abstract class SearchProblem {
 				}
 				iterativeDepthSearhCounter++;
 			}
-		}
-		else {
-		while (!queue.isEmpty()) {
-			curr = queue.remove();
+		} else {
+			while (!queue.isEmpty()) {
+				curr = queue.remove();
 //		visitedStates.add(curr.getState().getState());
-			if (goalTest(curr)) {
-				return curr;
-			}
-			for (int i = 0; i < operators.length; i++) {
-				tempNode = applyOperator(curr, operators[i]);
-				if (strategy.equals("IDF")) {
-					if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
-						queue.add(tempNode);
+				if (goalTest(curr)) {
+					return curr;
+				}
+				Collections.shuffle(operators);
+				for (int i = 0; i < operators.size(); i++) {
+					tempNode = applyOperator(curr, operators.get(i));
+					if (strategy.equals("IDF")) {
+						if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
+							queue.add(tempNode);
+						}
+					} else {
+						if (tempNode != null) {
+							queue.add(tempNode);
+						}
 					}
-				} else {
-					if (tempNode != null) {
-						queue.add(tempNode);
-					}
+
 				}
 
 			}
-
-		}
 		}
 		return null;
 	}

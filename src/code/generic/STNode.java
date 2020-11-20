@@ -134,7 +134,16 @@ public STNode getNthAncestor(int n) {
  } 
 
 public String getPlan() {
-	// Abougabal
-	return null;
+	// Souidan
+
+	if (this.getParent() == null)
+	{
+		return " ";
+	}
+	else {
+		return this.getParent().getPlan() +" " +this.getOperator();		
+	}
+	
 }
+
 }

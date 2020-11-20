@@ -1,8 +1,7 @@
 package code.mission;
 
-import java.util.Arrays;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -14,7 +13,7 @@ import code.generic.State;
 
 public class MissionImpossible extends SearchProblem {
 	public MissionImpossible(State initialState, State[] stateSpace, PriorityQueue<STNode> queue,
-			Operator[] operators) {
+			ArrayList<Operator> operators) {
 		super(initialState, stateSpace, queue, operators);
 		// TODO Auto-generated constructor stub
 	}
@@ -118,8 +117,11 @@ public class MissionImpossible extends SearchProblem {
 		if (solution == null) {
 			System.out.println("Failure");
 		} else
+		{
 			System.out.println(solution.getId());
-
+			System.out.println(solution.getPlan());
+			System.out.println(getDead((MINode) solution));
+		}
 		return null;
 	}
 
@@ -238,8 +240,13 @@ public class MissionImpossible extends SearchProblem {
 
 	@Override
 	public void populateOperators() {
-		operators = new Operator[] { Operator.UP, Operator.DOWN, Operator.RIGHT, Operator.LEFT, Operator.CARRY,
-				Operator.DROP };
+		operators = new ArrayList<Operator>();
+		operators.add(Operator.UP);
+		operators.add(Operator.DOWN);
+		operators.add(Operator.RIGHT);
+		operators.add(Operator.LEFT);
+		operators.add(Operator.CARRY);
+		operators.add(Operator.DROP);
 	}
 
 	@Override
@@ -604,5 +611,17 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return -1;
 	}
-
+	public static int getDead(MINode node)
+	{
+		int counter = 0;
+		int[] allMemHealth = ((MIState) node.getState()).getMemberHealth();
+		for (int i = 0; i < allMemHealth.length; i++)
+		{
+			if (allMemHealth[i] == 100)
+			{
+				counter++;
+			}
+		}
+		return counter;
+	}
 }
