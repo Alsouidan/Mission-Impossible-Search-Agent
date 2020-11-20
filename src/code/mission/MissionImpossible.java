@@ -38,6 +38,7 @@ public class MissionImpossible extends SearchProblem {
 	static int healthGained;
 	static int memberAtEthan;
 	static int idSoFar;
+	static String zeroString;
 
 	public static String solve(String grid, String strategy, boolean visualize) {
 
@@ -59,7 +60,6 @@ public class MissionImpossible extends SearchProblem {
 		memberRow = new int[numberOfMembers];
 		memberColumn = new int[numberOfMembers];
 		memberHealth = new int[numberOfMembers];
-		isMemberSaved = new int[numberOfMembers];
 		for (int i = 0, c = 0; c < numberOfMembers; i += 2, c++) {
 			memberRow[c] = Integer.parseInt(temp[i]);
 			memberColumn[c] = Integer.parseInt(temp[i + 1]);
@@ -70,31 +70,12 @@ public class MissionImpossible extends SearchProblem {
 			memberHealth[i] = Integer.parseInt(temp[i]);
 		}
 		maximumCarry = Integer.parseInt(splitted[5]);
-
-//		field = new Cell[gridRows][gridColumns];
-//		for (int i = 0; i < gridRows; i++) {
-//			for (int j = 0; j < gridColumns; j++) {
-//				field[i][j] = new Cell(1, j);
-//			}
-//		}
-//
-//		for (int i = 0; i < numberOfMembers; i++) {
-//			field[memberRow[i]][memberColumn[i]]
-//					.setOccupant(arrayToBeShuffled.get((memberRow[i] * gridColumns) + memberColumn[i]));
-//		}
-//		field[ethanRow][ethanColumn].setOccupant(arrayToBeShuffled.get(ethanRow * gridColumns + ethanColumn));
-//		field[submarineRow][submarineColumn]
-//				.setOccupant(arrayToBeShuffled.get(submarineRow * gridColumns + submarineColumn));
-		truckMembers = new ArrayList<Integer>();
-//		for (int i = 0; i < gridRows; i++) {
-//			for (int j = 0; j < gridColumns; j++) {
-//				System.out.print(field[i][j]);
-//			}
-//			System.out.println("");
-//		}
-//		15,15;0,0;0,1;0,2,0,3,0,4,0,5,0,6;91,5,58,47,85;10
-		State initialState = new MIState(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, isMemberSaved,
-				truckMembers);
+		zeroString="";
+		for(int i=0;i<numberOfMembers;i++) {
+			zeroString+="0";
+		}
+		State initialState = new MIState(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, zeroString,
+				zeroString,0);
 		PriorityQueue<STNode> queue = null;
 		switch (strategy) {
 		case "DF":
@@ -204,7 +185,7 @@ public class MissionImpossible extends SearchProblem {
 		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
 
 //		solve(genGrid(), "UCS", false);
-		System.out.println(solve(grid14, "UC", false));
+		System.out.println(solve(grid5, "UC", false));
 	}
 //	public static void main(String[] args) {
 //		solve(genGrid(), "", false);
@@ -245,7 +226,7 @@ public class MissionImpossible extends SearchProblem {
 //			System.out.println("");
 //		}
 		for (int i = 0; i < numberOfMembers; i++) {
-			if (miState.getIsMemberSaved()[i] == 0)
+			if (miState.getIsMemberSaved().charAt(i) == '0')
 				return false;
 		}
 		return true;
@@ -277,23 +258,25 @@ public class MissionImpossible extends SearchProblem {
 //		System.out.println(operator);
 		MIState currentState = (MIState) state;
 		int[] tempHealth = null;
-		int[] tempIsMemberSaved = null;
+		String tempIsMemberSaved = null;
 		int[] tempMemberRow = null;
 		int[] tempMemberColumn = null;
+		int tempMembersOnTruck=-1;
 //		Cell[][] tempField=null;
 //		int[] tempArr;
 		int tempEthanRow = -1;
 		int tempEthanColumn = -1;
-		ArrayList<Integer> tempTruckMembers = null;
+		String tempTruckMembers = null;
 		switch (operator) {
 		case UP:
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
+			tempIsMemberSaved = currentState.getIsMemberSaved();
+			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -311,7 +294,7 @@ public class MissionImpossible extends SearchProblem {
 
 				}
 			}
-			tempTruckMembers = ((ArrayList<Integer>) (currentState.getTruckMembers().clone()));
+			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow() - 1);
 			tempEthanColumn = (currentState.getEthanColumn());
 			// Can be optimized
@@ -337,13 +320,14 @@ public class MissionImpossible extends SearchProblem {
 
 			break;
 		case DOWN:
+			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
+			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -354,7 +338,7 @@ public class MissionImpossible extends SearchProblem {
 					}
 				}
 			}
-			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
+			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow() + 1);
 			tempEthanColumn = (currentState.getEthanColumn());
 			// Can be optimized
@@ -379,13 +363,14 @@ public class MissionImpossible extends SearchProblem {
 //			nextState.setField(tempField);
 			break;
 		case LEFT:
+			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
+			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -396,7 +381,7 @@ public class MissionImpossible extends SearchProblem {
 					}
 				}
 			}
-			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
+			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn() - 1);
 			// Can be optimized
@@ -421,13 +406,14 @@ public class MissionImpossible extends SearchProblem {
 //			nextState.setField(tempField);
 			break;
 		case RIGHT:
+			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
+			tempIsMemberSaved =currentState.getIsMemberSaved();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -438,7 +424,7 @@ public class MissionImpossible extends SearchProblem {
 					}
 				}
 			}
-			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
+			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn() + 1);
 			// Can be optimized
@@ -463,10 +449,11 @@ public class MissionImpossible extends SearchProblem {
 //			nextState.setField(tempField);
 			break;
 		case CARRY:
+			tempMembersOnTruck=currentState.getMembersOnTruck()+1;
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
-			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
+			tempIsMemberSaved = currentState.getIsMemberSaved();
+			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn());
 			tempMemberColumn[memberAtEthan] = -1;
@@ -474,13 +461,13 @@ public class MissionImpossible extends SearchProblem {
 //			System.out.println("Carrying");
 //			System.out.println(Arrays.toString(tempMemberRow));
 //			System.out.println(Arrays.toString(tempMemberColumn));
-			tempTruckMembers.add(memberAtEthan);
+			String myName = "domanokz";
+			tempTruckMembers=tempTruckMembers.substring(0,memberAtEthan)+'1'+myName.substring(memberAtEthan+1);
 //			System.out.println(tempTruckMembers);
-			Collections.sort(tempTruckMembers);
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -514,25 +501,25 @@ public class MissionImpossible extends SearchProblem {
 //			nextState.setField(tempField);
 			break;
 		case DROP:
+			tempMembersOnTruck=0;
 			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
-			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
-			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
+			tempIsMemberSaved = currentState.getIsMemberSaved();
+			tempTruckMembers = currentState.getTruckMembers();
 //			System.out.println("**********************");
 //			System.out.println(Arrays.toString(tempIsMemberSaved));
 //			System.out.println(tempTruckMembers);
 //			System.out.println(tempTruckMembers.size());
-			for (int i = 0; i < tempTruckMembers.size(); i++) {
-				tempIsMemberSaved[tempTruckMembers.get(i)] = 1;
-			}
+			
 //			System.out.println(Arrays.toString(tempIsMemberSaved));
-			tempTruckMembers.clear();
+			tempIsMemberSaved=binaryOr(tempIsMemberSaved, tempTruckMembers);
+			tempTruckMembers=zeroString;
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn());
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (!currentState.getTruckMembers().contains(i) && currentState.getIsMemberSaved()[i] == 0
+				if (currentState.getTruckMembers().charAt(i)==0 && currentState.getIsMemberSaved().charAt(i) == '0'
 						&& tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
@@ -567,7 +554,7 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		}
 		MIState nextState = new MIState(tempEthanRow, tempEthanColumn, tempMemberRow, tempMemberColumn, tempHealth,
-				tempIsMemberSaved, tempTruckMembers);
+				tempIsMemberSaved, tempTruckMembers,tempMembersOnTruck);
 		if(((MIState) node.getState()).getStateForVisitedStates().equals(nextState.getStateForVisitedStates())) {
 			return null;
 		}
@@ -639,7 +626,7 @@ public class MissionImpossible extends SearchProblem {
 
 	public static int findMember(int x, int y, MIState currentState) { // gets index of member
 		for (int i = 0; i < numberOfMembers; i++) {
-			if (currentState.getIsMemberSaved()[i] == 0 && x == currentState.getMemberRow()[i]
+			if (currentState.getIsMemberSaved().charAt(i) == '0' && x == currentState.getMemberRow()[i]
 					&& y == currentState.getMemberColumn()[i]) {
 				return i;
 			}
@@ -647,6 +634,18 @@ public class MissionImpossible extends SearchProblem {
 		return -1;
 	}
 
+public static String binaryOr(String s1,String s2) {
+	String s3="";
+	for(int i=0;i<numberOfMembers;i++) {
+		if(s1.charAt(i)=='1' ||s2.charAt(i)=='1') {
+			s3+="1";
+		}
+		else {
+			s3+="0";
+		}
+	}
+	return s3;
+}
 	public static int getDead(MIState state) {
 		int counter = 0;
 		int[] allMemHealth = state.getMemberHealth();

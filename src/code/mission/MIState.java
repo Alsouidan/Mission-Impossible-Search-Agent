@@ -19,18 +19,21 @@ public class MIState extends State {
 //	boolean[] isMemberSaved; // Saved means they are on submarine
 //	HashSet<Integer> truckMembers;
 //	int membersOnTruck;
-	public String [] splitted;
+	public String[] splitted;
+
 	public String getStateForVisitedStates() {
-		String stateforVisitedStates=";";
-		String [] splitted=this.getState().split(";");
-		splitted[3]="";
-		for(String str : splitted) {
-			stateforVisitedStates+=str+=";";
+		String stateforVisitedStates = ";";
+		String[] splitted = this.getState().split(";");
+		splitted[3] = "";
+		splitted[4] = "";
+		for (String str : splitted) {
+			stateforVisitedStates += str += ";";
 		}
 		return stateforVisitedStates;
 	}
+
 	public String returnString(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
-		int[] isMemberSaved, ArrayList<Integer> truckMembers) {
+			String isMemberSaved, String truckMembers, int membersOnTruck) {
 		String str = "";
 		String memberRowString = "";
 		String memberColummString = "";
@@ -40,23 +43,17 @@ public class MIState extends State {
 		memberColummString = (Arrays.toString(memberColumn)).replaceAll("[\\[\\]\\s]", "") + ";";
 		memberRowString = (Arrays.toString(memberRow)).replaceAll("[\\[\\]\\s]", "") + ";";
 		memberHealthString = (Arrays.toString(memberHealth)).replaceAll("[\\[\\]\\s]", "") + ";";
-		isMemberSavedString = (Arrays.toString(isMemberSaved)).replaceAll("[\\[\\]\\s]", "") + ";";
-		if(truckMembers.size()==0) {
-			str += memberRowString + memberColummString + memberHealthString + isMemberSavedString
-					+ "e"; //e for empty	
-		}
-		else {
-		str += memberRowString + memberColummString + memberHealthString + isMemberSavedString
-				+ truckMembers.toString().replaceAll("[\\[\\]\\s]", "");
-		}
-		splitted=str.split(";");
+		isMemberSavedString = isMemberSaved + ";";
+		str += memberRowString + memberColummString + memberHealthString + isMemberSavedString + truckMembers + ";"
+				+ membersOnTruck;
+		splitted = str.split(";");
 		return str;
 	}
 
 	public MIState(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
-			int[] isMemberSaved, ArrayList<Integer> truckMembers) {
+			String isMemberSaved, String truckMembers, int membersOnTruck) {
 		this.state = this.returnString(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, isMemberSaved,
-				truckMembers);
+				truckMembers, membersOnTruck);
 	}
 
 	public MIState() {
@@ -95,42 +92,32 @@ public class MIState extends State {
 		return memberHealth;
 	}
 
-	public int[] getIsMemberSaved() {
-		int[] isMemberSaved = Stream.of(splitted[4].split(",")).mapToInt(Integer::parseInt).toArray();
-		return isMemberSaved;
+	public String getIsMemberSaved() {
+
+		return splitted[4];
 	}
 
-	public ArrayList<Integer> getTruckMembers() {
-		String str=splitted[5];
-		if(str.equals("e")) {
-			return new ArrayList<Integer>();
-		}
-		else {
-		int[] truckMembersInt = Stream.of(str.split(",")).mapToInt(Integer::parseInt).toArray();
-		ArrayList<Integer> truckMembers = new ArrayList<Integer>();
-		for (int i : truckMembersInt) {
-			truckMembers.add(i);
-		}
-		return truckMembers;
-		}
+	public String getTruckMembers() {
+		return splitted[5];
+
 	}
 
 	public int getMembersOnTruck() {
-		return getTruckMembers().size();
+		return Integer.parseInt(splitted[6]);
 	}
 
 //	public String getFromState(String key) {
 //		return stateMap.get(key);
 //	}
-public static void main (String [] args) {
-	String string="2,3;1,2,3;1,2,3;1,2,3;0,0,0;";
-	String stateforVisitedStates="";
-	String [] splitted=string.split(";");
-	splitted[3]="";
-	for(String str : splitted) {
-		System.out.println(str);
-		stateforVisitedStates+=str+";";
+	public static void main(String[] args) {
+		String string = "2,3;1,2,3;1,2,3;1,2,3;0,0,0;";
+		String stateforVisitedStates = "";
+		String[] splitted = string.split(";");
+		splitted[3] = "";
+		for (String str : splitted) {
+			System.out.println(str);
+			stateforVisitedStates += str + ";";
+		}
+		System.out.println(stateforVisitedStates);
 	}
-System.out.println(stateforVisitedStates);
-}
 }
