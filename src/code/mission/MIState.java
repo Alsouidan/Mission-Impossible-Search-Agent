@@ -19,6 +19,7 @@ public class MIState extends State {
 //	boolean[] isMemberSaved; // Saved means they are on submarine
 //	HashSet<Integer> truckMembers;
 //	int membersOnTruck;
+	public String [] splitted;
 	public String getStateForVisitedStates() {
 		String stateforVisitedStates=";";
 		String [] splitted=this.getState().split(";");
@@ -48,6 +49,7 @@ public class MIState extends State {
 		str += memberRowString + memberColummString + memberHealthString + isMemberSavedString
 				+ truckMembers.toString().replaceAll("[\\[\\]\\s]", "");
 		}
+		splitted=str.split(";");
 		return str;
 	}
 
@@ -70,41 +72,41 @@ public class MIState extends State {
 //	}
 
 	public int getEthanRow() {
-		return Integer.parseInt(state.split(";")[0].split(",")[0]);
+		return Integer.parseInt(splitted[0].split(",")[0]);
 	}
 
 	public int getEthanColumn() {
-		return Integer.parseInt(state.split(";")[0].split(",")[1]);
+		return Integer.parseInt(splitted[0].split(",")[1]);
 	}
 
 	public int[] getMemberRow() {
 
-		int[] intArray = Stream.of(state.split(";")[1].split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] intArray = Stream.of(splitted[1].split(",")).mapToInt(Integer::parseInt).toArray();
 		return intArray;
 	}
 
 	public int[] getMemberColumn() {
-		int[] intArray = Stream.of(state.split(";")[2].split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] intArray = Stream.of(splitted[2].split(",")).mapToInt(Integer::parseInt).toArray();
 		return intArray;
 	}
 
 	public int[] getMemberHealth() {
-		int[] memberHealth = Stream.of(state.split(";")[3].split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] memberHealth = Stream.of(splitted[3].split(",")).mapToInt(Integer::parseInt).toArray();
 		return memberHealth;
 	}
 
 	public int[] getIsMemberSaved() {
-		int[] isMemberSaved = Stream.of(state.split(";")[4].split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] isMemberSaved = Stream.of(splitted[4].split(",")).mapToInt(Integer::parseInt).toArray();
 		return isMemberSaved;
 	}
 
 	public ArrayList<Integer> getTruckMembers() {
-		String splitted=state.split(";")[5];
-		if(splitted.equals("e")) {
+		String str=splitted[5];
+		if(str.equals("e")) {
 			return new ArrayList<Integer>();
 		}
 		else {
-		int[] truckMembersInt = Stream.of(splitted.split(",")).mapToInt(Integer::parseInt).toArray();
+		int[] truckMembersInt = Stream.of(str.split(",")).mapToInt(Integer::parseInt).toArray();
 		ArrayList<Integer> truckMembers = new ArrayList<Integer>();
 		for (int i : truckMembersInt) {
 			truckMembers.add(i);

@@ -1,10 +1,8 @@
 package code.generic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-
 import code.mission.Operator;
 
 public abstract class SearchProblem {
@@ -33,10 +31,11 @@ public abstract class SearchProblem {
 	public abstract STNode applyOperator(STNode node, Operator operator);
 
 	public STNode generalSearchProcedure(SearchProblem searchProblem, String strategy) {
+		System.out.println("Searching");
 		STNode curr = null;
 		STNode tempNode = null;
 		int iterativeDepthSearhCounter = 0;
-		if (strategy.equals("IDF")) {
+		if (strategy.equals("ID")) {
 			STNode root = queue.remove();
 			System.out.println(root);
 			while (true) {
@@ -48,6 +47,7 @@ public abstract class SearchProblem {
 					curr = queue.remove();
 //			visitedStates.add(curr.getState().getState());
 					if (goalTest(curr)) {
+						System.out.println("Found");
 						return curr;
 					}
 //					Collections.shuffle(operators);

@@ -104,11 +104,11 @@ public class MissionImpossible extends SearchProblem {
 		case "BF":
 			queue = new PriorityQueue<STNode>();
 			break;
-		case "IDF":
+		case "ID":
 			queue = new PriorityQueue<STNode>(new NodeIdComparator());
 
 			break;
-		case "UCS":
+		case "UC":
 			queue = new PriorityQueue<STNode>(new NodeCostComparator());
 			break;
 		}
@@ -127,7 +127,9 @@ public class MissionImpossible extends SearchProblem {
 			System.out.println(solution.getDepth());
 			System.out.println(getDead((MIState) solution.getState()));
 		}
-		return null;
+		MIState miSolution=(MIState) solution.getState();
+		String plan=solution.getPlan().toLowerCase();
+		return plan.substring(0,plan.length()-1)+";"+getDead(miSolution)+";"+Arrays.toString(miSolution.getMemberHealth()).replaceAll("[\\[\\]\\s]", "")+";"+expandedNodes;
 	}
 
 	public static String genGrid() {
@@ -199,8 +201,10 @@ public class MissionImpossible extends SearchProblem {
 
 	public static void main(String[] args) {
 		String grid5 = "5,5;2,1;1,0;1,3,4,2,4,1,3,1;54,31,39,98;2";
+		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
+
 //		solve(genGrid(), "UCS", false);
-		solve(grid5, "IDF", false);
+		System.out.println(solve(grid14, "UC", false));
 	}
 //	public static void main(String[] args) {
 //		solve(genGrid(), "", false);
@@ -514,14 +518,14 @@ public class MissionImpossible extends SearchProblem {
 			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
 			tempIsMemberSaved = (Arrays.copyOf(currentState.getIsMemberSaved(), numberOfMembers));
 			tempTruckMembers = (ArrayList<Integer>) (currentState.getTruckMembers().clone());
-			System.out.println("**********************");
-			System.out.println(Arrays.toString(tempIsMemberSaved));
-			System.out.println(tempTruckMembers);
+//			System.out.println("**********************");
+//			System.out.println(Arrays.toString(tempIsMemberSaved));
+//			System.out.println(tempTruckMembers);
 //			System.out.println(tempTruckMembers.size());
 			for (int i = 0; i < tempTruckMembers.size(); i++) {
 				tempIsMemberSaved[tempTruckMembers.get(i)] = 1;
 			}
-			System.out.println(Arrays.toString(tempIsMemberSaved));
+//			System.out.println(Arrays.toString(tempIsMemberSaved));
 			tempTruckMembers.clear();
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn());
@@ -564,6 +568,9 @@ public class MissionImpossible extends SearchProblem {
 		}
 		MIState nextState = new MIState(tempEthanRow, tempEthanColumn, tempMemberRow, tempMemberColumn, tempHealth,
 				tempIsMemberSaved, tempTruckMembers);
+		if(((MIState) node.getState()).getStateForVisitedStates().equals(nextState.getStateForVisitedStates())) {
+			return null;
+		}
 		if (visitedStates.contains(nextState.getStateForVisitedStates())) {
 //			System.out.println(nextState.getState());
 			return null;

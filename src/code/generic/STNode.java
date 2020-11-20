@@ -139,10 +139,10 @@ public String getPlan() {
 
 	if (this.getParent() == null)
 	{
-		return " ";
+		return "";
 	}
 	else {
-		return this.getParent().getPlan() +" " +this.getOperator();		
+		return this.getParent().getPlan() +this.getOperator()+",";		
 	}
 	
 }
