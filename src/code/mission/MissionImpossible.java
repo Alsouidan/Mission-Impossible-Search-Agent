@@ -270,8 +270,8 @@ public class MissionImpossible extends SearchProblem {
 		String tempTruckMembers = null;
 		switch (operator) {
 		case UP:
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn = currentState.getMemberColumn();
+			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempMembersOnTruck=currentState.getMembersOnTruck();
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
@@ -324,10 +324,10 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case DOWN:
 			tempMembersOnTruck=currentState.getMembersOnTruck();
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn = currentState.getMemberColumn();;
+			tempMemberRow =currentState.getMemberRow();;
 			tempIsMemberSaved = currentState.getIsMemberSaved();
-			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
+			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
 				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
@@ -367,10 +367,10 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case LEFT:
 			tempMembersOnTruck=currentState.getMembersOnTruck();
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn =currentState.getMemberColumn();
+			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
-			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
+			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
 				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
@@ -410,10 +410,10 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case RIGHT:
 			tempMembersOnTruck=currentState.getMembersOnTruck();
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn = currentState.getMemberColumn();
+			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved =currentState.getIsMemberSaved();
-			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
+			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
 				if (currentState.getTruckMembers().charAt(i)=='0' && currentState.getIsMemberSaved().charAt(i) == '0'
@@ -453,8 +453,8 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case CARRY:
 			tempMembersOnTruck=currentState.getMembersOnTruck()+1;
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn = currentState.getMemberColumn();
+			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow());
@@ -504,8 +504,8 @@ public class MissionImpossible extends SearchProblem {
 			break;
 		case DROP:
 			tempMembersOnTruck=0;
-			tempMemberColumn = Arrays.copyOf(currentState.getMemberColumn(), numberOfMembers);
-			tempMemberRow = (Arrays.copyOf(currentState.getMemberRow(), numberOfMembers));
+			tempMemberColumn = currentState.getMemberColumn();
+			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempTruckMembers = currentState.getTruckMembers();
 //			System.out.println("**********************");
