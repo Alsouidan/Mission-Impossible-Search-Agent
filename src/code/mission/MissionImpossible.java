@@ -186,7 +186,7 @@ public class MissionImpossible extends SearchProblem {
 		String grid10 = "10,10;6,3;4,8;9,1,2,4,4,0,3,9,6,4,3,4,0,5,1,6,1,9;97,49,25,17,94,3,96,35,98;3";
 
 //		solve(genGrid(), "UCS", false);
-		System.out.println(solve(grid10, "BF", false));
+		System.out.println(solve(grid5, "BF", false));
 	}
 //	public static void main(String[] args) {
 //		solve(genGrid(), "", false);
