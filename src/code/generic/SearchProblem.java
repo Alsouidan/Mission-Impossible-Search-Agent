@@ -29,56 +29,52 @@ public abstract class SearchProblem {
 	public abstract int pathCost(STNode node);
 
 	public abstract STNode applyOperator(STNode node, Operator operator);
-
+//	General Search Problem implementation (Same as in lecture)
 	public STNode generalSearchProcedure(SearchProblem searchProblem, String strategy) {
 		System.out.println("Searching");
 		STNode curr = null;
 		STNode tempNode = null;
-		int iterativeDepthSearhCounter = 0;
-		int stepSize = 1;
+		int iterativeDepthSearhCounter = 0; // Max depth to reach in IDF
+		int stepSize = 1; // Step size that the counter is incremented by in IDF
 		if (strategy.equals("ID")) {
-			STNode root = queue.remove();
-			System.out.println(root);
+			STNode root = queue.remove(); // Dequeue from the queue and get the root
 			while (true) {
-				System.out.println("Loop number: " + iterativeDepthSearhCounter);
+				// Empty the queue
 				queue = new PriorityQueue<STNode>(new NodeIdComparator());
-				queue.add(root);
+//				Add the root
+				queue.add(root); 
+//				The search routine 
 				while (!queue.isEmpty()) {
-//					System.out.println("Removing head");
 					curr = queue.remove();
-//			visitedStates.add(curr.getState().getState());
 					if (goalTest(curr)) {
 						System.out.println("Found");
 						return curr;
 					}
-//					Collections.shuffle(operators);
 					for (int i = 0; i < operators.size(); i++) {
 						tempNode = applyOperator(curr, operators.get(i));
 
 						if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
-//							System.out.println("Adding node");
 							queue.add(tempNode);
 						}
-//						else {
-//							if(tempNode!= null && tempNode.getDepth()>iterativeDepthSearhCounter)
-//								break;
-//						}
+
 
 					}
 
 				}
+//				Increase the step size according to the counter
 				stepSize = (1 + (iterativeDepthSearhCounter / 10));
 				iterativeDepthSearhCounter += stepSize;
+//				Clear visited states for the next loop
 				visitedStates.clear();
 			}
 		} else {
-			while (!queue.isEmpty()) {
-				curr = queue.remove();
-//		visitedStates.add(curr.getState().getState());
-				if (goalTest(curr)) {
+//			Search routine
+			while (!queue.isEmpty()) { // Loop until queue is empty
+				curr = queue.remove(); // Remove a node
+				if (goalTest(curr)) { // See if its a goal node
 					return curr;
 				}
-//				Collections.shuffle(operators);
+//				If not a goal node we will apply the operators and enqueue the new nodes
 				for (int i = 0; i < operators.size(); i++) {
 					tempNode = applyOperator(curr, operators.get(i));
 
@@ -90,6 +86,7 @@ public abstract class SearchProblem {
 
 			}
 		}
+//		If no solution is found we return null
 		return null;
 	}
 }

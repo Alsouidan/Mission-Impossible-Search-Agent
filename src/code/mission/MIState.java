@@ -9,18 +9,9 @@ import java.util.stream.Stream;
 import code.generic.State;
 
 public class MIState extends State {
-//	HashMap <String,String> stateMap;
-	Cell[][] field;
-//	int ethanRow;
-//	int ethanColumn;
-//	int[] memberRow;
-//	int[] memberColumn;
-//	int[] memberHealth;
-//	boolean[] isMemberSaved; // Saved means they are on submarine
-//	HashSet<Integer> truckMembers;
-//	int membersOnTruck;
-	public String[] splitted;
-
+	Cell[][] field; // Used in visualize
+	public String[] splitted; 
+// Gest state representation that is added in the visietd States hashset
 	public String getStateForVisitedStates() {
 		String stateforVisitedStates = ";";
 		String[] splitted = this.getState().split(";");
@@ -31,7 +22,7 @@ public class MIState extends State {
 		}
 		return stateforVisitedStates;
 	}
-
+// returns string representation of the state
 	public String returnString(int ethanRow, int ethanColumn, int[] memberRow, int[] memberColumn, int[] memberHealth,
 			String isMemberSaved, String truckMembers, int membersOnTruck) {
 		String str = "";
@@ -60,13 +51,10 @@ public class MIState extends State {
 
 	}
 
-//	public Cell[][] getField() {
-//		return field;
-//	}
-
-//	public void setField(Cell[][] field) {
-//		this.field = field;
-//	}
+	/////////////////////////////////////////////////////////////////////////////
+	
+//	Below getters extract variables from the string represnetation of the state and parse them accordingly
+	/////////////////////////////////////////////////////////////////////////////
 
 	public int getEthanRow() {
 		return Integer.parseInt(splitted[0].split(",")[0]);
@@ -76,6 +64,8 @@ public class MIState extends State {
 		return Integer.parseInt(splitted[0].split(",")[1]);
 	}
 
+	
+	
 	public int[] getMemberRow() {
 
 		int[] intArray = Stream.of(splitted[1].split(",")).mapToInt(Integer::parseInt).toArray();
@@ -106,19 +96,8 @@ public class MIState extends State {
 		return Integer.parseInt(splitted[6]);
 	}
 
-//	public String getFromState(String key) {
-//		return stateMap.get(key);
-//	}
 	public static void main(String[] args) {
-		String string = "2,3;1,2,3;1,2,3;1,2,3;0,0,0;";
-		String stateforVisitedStates = "";
-		String[] splitted = string.split(";");
-		splitted[3] = "";
-		for (String str : splitted) {
-			System.out.println(str);
-			stateforVisitedStates += str + ";";
-		}
-		System.out.println(stateforVisitedStates);
+
 	}
 	
 }

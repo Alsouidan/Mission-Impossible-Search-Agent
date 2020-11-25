@@ -80,21 +80,27 @@ public class MissionImpossible extends SearchProblem {
 		for (int i = 0; i < numberOfMembers; i++) {
 			zeroString += "0";
 		}
+		// Making the initial state from the variables acquired from the grid from the
+		// steps above
 		State initialState = new MIState(ethanRow, ethanColumn, memberRow, memberColumn, memberHealth, zeroString,
 				zeroString, 0);
 		PriorityQueue<STNode> queue = null;
 		switch (strategy) {
 		case "DF":
+			// Using the ID comparator , higher priority for greater values of ID
 			queue = new PriorityQueue<STNode>(new NodeIdComparator());
 			break;
 		case "BF":
+			// No comparator used as to use the priority queue as a regular queue
 			queue = new PriorityQueue<STNode>();
 			break;
 		case "ID":
+			// Using same comparator as DF
 			queue = new PriorityQueue<STNode>(new NodeIdComparator());
 
 			break;
 		case "UC":
+			// The comparator gives a higher priority for less costs
 			queue = new PriorityQueue<STNode>(new NodeCostComparator());
 			break;
 		case "GR1":
@@ -102,14 +108,16 @@ public class MissionImpossible extends SearchProblem {
 
 		case "GR2":
 			includeHeuristic = true;
+			// comparator gives higher priority for less heuristic
 			queue = new PriorityQueue<STNode>(new NodeHeuristicComparator());
 			break;
 		case "AS1":
 			heuristicType = true;
 		case "AS2":
 			includeHeuristic = true;
+			// Comparator gives higher priority for less cost+heuristic
 			queue = new PriorityQueue<STNode>(new NodeAStarComparator());
-			break; // change to A* Comparator
+			break;
 
 		}
 		int[] heuristicCost = null;
@@ -124,14 +132,17 @@ public class MissionImpossible extends SearchProblem {
 		for (int i = 0; i < memberHealth.length; i++) {
 			totalHealths += memberHealth[i];
 		}
-		System.out.println(totalHealths);
+//		Initialize the initlaNode with the initlastate
 		STNode initialNode = new MINode(initialState, idSoFar++, totalHealths, 0, heuristicCost, null, null, 0,
 				getDead((MIState) initialState));
+//		Add initialNode in queue
 		queue.add(initialNode);
 		MissionImpossible missionImpossible = new MissionImpossible(initialState, null, queue, null);
 		missionImpossible.populateOperators();
 		missionImpossible.visitedStates = new HashSet<String>();
+//		add initial state in visited states
 		missionImpossible.visitedStates.add(((MIState) initialState).getStateForVisitedStates());
+//		Call the generalSearchProblem to return the solution Node
 		STNode solution = missionImpossible.generalSearchProcedure(missionImpossible, strategy);
 		if (solution == null) {
 			System.out.println("Failure");
@@ -153,6 +164,7 @@ public class MissionImpossible extends SearchProblem {
 		if (visualize) {
 			printFlow(solution);
 		}
+//		get plan and return the output string
 		String plan = solution.getPlan().toLowerCase();
 		return plan.substring(0, plan.length() - 1) + ";" + getDead(miSolution) + ";"
 				+ Arrays.toString(miSolution.getMemberHealth()).replaceAll("[\\[\\]\\s]", "") + ";" + expandedNodes;
@@ -170,6 +182,7 @@ public class MissionImpossible extends SearchProblem {
 		grid += rowSize + ",";
 		grid += columnSize + ";";
 		System.out.println(grid);
+//		Make ArrayList so we would add the occupants adjacent in it then shuffle to get a random grid
 		arrayToBeShuffled = new ArrayList<Occupant>(rowSize * columnSize);
 		Ethan ethan = new Ethan();
 		arrayToBeShuffled.add(ethan);
@@ -189,6 +202,7 @@ public class MissionImpossible extends SearchProblem {
 			arrayToBeShuffled.add(membersInShuffledArray[i]);
 		}
 		int initialSize = arrayToBeShuffled.size();
+//		Pad the arraylist with null values to be the same size as the grid flattened
 		for (int i = initialSize; i < rowSize * columnSize; i++) {
 			arrayToBeShuffled.add(null);
 		}
@@ -243,9 +257,9 @@ public class MissionImpossible extends SearchProblem {
 
 //		System.out.println("UCS 14");
 //		System.out.println();
-		System.out.println(solve(grid5, "BF", false));
-		System.out.println(solve(grid5, "DF", false));
-//		System.out.println(solve(grid6, "GR1", false));
+		System.out.println(solve(grid5, "UC", false));
+		System.out.println(solve(grid5, "AS2", false));
+		System.out.println(solve(grid5, "GR2", false));
 //		System.out.println("UCS 10");
 //		System.out.println(solve(grid10,"UC",false));
 		System.out.println("A Star");
@@ -285,9 +299,11 @@ public class MissionImpossible extends SearchProblem {
 
 	public STNode applyOperator(STNode node, Operator operator) {
 		State state = node.getState();
+//		Check if the operator can be applied on the state
 		if (!isApplicable(state, operator)) {
-			return null;
+			return null; // Return null if not applicable
 		}
+//		initilaize temp variables to store the state variables in for computations
 		MIState currentState = (MIState) state;
 		int[] tempHealth = null;
 		String tempIsMemberSaved = null;
@@ -299,6 +315,7 @@ public class MissionImpossible extends SearchProblem {
 		String tempTruckMembers = null;
 		switch (operator) {
 		case UP:
+//			Get relevant state variables from state
 			tempMemberColumn = currentState.getMemberColumn();
 			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
@@ -307,7 +324,7 @@ public class MissionImpossible extends SearchProblem {
 			tempTruckMembers = currentState.getTruckMembers();
 
 			healthGained = 0;
-
+//			loop to inflict damage on member's healths 
 			for (int i = 0; i < numberOfMembers; i++) {
 
 				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
@@ -327,6 +344,7 @@ public class MissionImpossible extends SearchProblem {
 
 				}
 			}
+//			move Ethan 
 			tempEthanRow = (currentState.getEthanRow() - 1);
 			tempEthanColumn = (currentState.getEthanColumn());
 			break;
@@ -407,8 +425,10 @@ public class MissionImpossible extends SearchProblem {
 			tempTruckMembers = currentState.getTruckMembers();
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn());
+//			Make Carried people's location on grid = -1
 			tempMemberColumn[memberAtEthan] = -1;
 			tempMemberRow[memberAtEthan] = -1;
+//			Make the character in the string truck members (String of zeros and ones to be one for the member carried)
 			tempTruckMembers = tempTruckMembers.substring(0, memberAtEthan) + '1'
 					+ tempTruckMembers.substring(memberAtEthan + 1);
 			tempHealth = currentState.getMemberHealth();
@@ -433,7 +453,10 @@ public class MissionImpossible extends SearchProblem {
 			tempMemberRow = currentState.getMemberRow();
 			tempIsMemberSaved = currentState.getIsMemberSaved();
 			tempTruckMembers = currentState.getTruckMembers();
+//			Binary Oring of the two strings (Members on truck and isMemberSaved) to get the new isMemberSaved
+//			Both these strings are strings of zeros and ones to represent at each index which member is on truck or saved
 			tempIsMemberSaved = binaryOr(tempIsMemberSaved, tempTruckMembers);
+//			Reset truck members to all zeros string
 			tempTruckMembers = zeroString;
 			tempEthanRow = (currentState.getEthanRow());
 			tempEthanColumn = (currentState.getEthanColumn());
@@ -452,17 +475,21 @@ public class MissionImpossible extends SearchProblem {
 			}
 			memberAtEthan = -1;
 		}
+//		Make the next state with the new variables
 		MIState nextState = new MIState(tempEthanRow, tempEthanColumn, tempMemberRow, tempMemberColumn, tempHealth,
 				tempIsMemberSaved, tempTruckMembers, tempMembersOnTruck);
+//		Make sure that this state is not visited
 		if (((MIState) node.getState()).getStateForVisitedStates().equals(nextState.getStateForVisitedStates())) {
-			return null;
+			return null; //return null if visited
 		}
 		if (visitedStates.contains(nextState.getStateForVisitedStates())) {
 			return null;
 		} else {
+//			else we add in visited states
 			visitedStates.add(nextState.getStateForVisitedStates());
 		}
 		int[] heuristicCost = null;
+//		Calculate heuristic for the new state
 		if (includeHeuristic) {
 			if (heuristicType) {
 				heuristicCost = calculateHeuristicOne(nextState);
@@ -475,10 +502,12 @@ public class MissionImpossible extends SearchProblem {
 //		System.out.println(node.getCost());
 //		System.out.println("Health incurred is : "+(node.getCost() + healthGained));
 //		System.out.println("Deaths:" +getDead(nextState));
+//		Create the new node and return to be added in the queue
 		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, heuristicCost, node,
 				operator, node.getDepth() + 1, getDead(nextState));
 	}
 
+//	Checks if the operator can be applied on the state
 	public static boolean isApplicable(State state, Operator operator) {
 		MIState currentState = (MIState) state;
 		switch (operator) {
@@ -527,7 +556,7 @@ public class MissionImpossible extends SearchProblem {
 
 		}
 	}
-
+//	Gets the member at ethan's position and returns -1 if there are no members at ethan
 	public static int findMember(int x, int y, MIState currentState) { // gets index of member
 		for (int i = 0; i < numberOfMembers; i++) {
 			if (currentState.getIsMemberSaved().charAt(i) == '0' && x == currentState.getMemberRow()[i]
@@ -537,7 +566,7 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return -1;
 	}
-
+//	Binary Oring of two equal lenghted strings of 1's and 0's
 	public static String binaryOr(String s1, String s2) {
 		String s3 = "";
 		for (int i = 0; i < numberOfMembers; i++) {
@@ -549,7 +578,7 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return s3;
 	}
-
+//	Gets deaths at a state
 	public static int getDead(MIState state) {
 		int counter = 0;
 		int[] allMemHealth = state.getMemberHealth();
@@ -560,14 +589,14 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return counter;
 	}
-
+	
 	public static int calculateManhattanDistance(int x1, int x2, int y1, int y2) {
 		int deltaX = Math.abs(x2 - x1);
 		int deltaY = Math.abs(y2 - y1);
 		return deltaX + deltaY;
 
 	}
-
+	
 	public static int calculateEuclideanDistance(int x1, int x2, int y1, int y2) {
 		int deltaX = Math.abs(x2 - x1);
 		int deltaY = Math.abs(y2 - y1);
@@ -575,7 +604,8 @@ public class MissionImpossible extends SearchProblem {
 		int deltaYSquared = deltaY * deltaY;
 		return (int) Math.sqrt(deltaXSquared + deltaYSquared);
 	}
-
+// Finds nearest member to ethan using euclidean distance (returns distance and index of the member)
+	
 	public static int[] findNearestMember(MIState miState) {
 		int[] tempMemberRow = miState.getMemberRow();
 		int[] tempMemberColumn = miState.getMemberColumn();
@@ -599,6 +629,8 @@ public class MissionImpossible extends SearchProblem {
 		return new int[] { minDistance, minIndex };
 
 	}
+// Finds nearest member to Ethan using Manhattan distance (returns distance and index of the member)
+
 	public static int[] findNearestMember2(MIState miState) {
 		int[] tempMemberRow = miState.getMemberRow();
 		int[] tempMemberColumn = miState.getMemberColumn();
@@ -622,8 +654,8 @@ public class MissionImpossible extends SearchProblem {
 		return new int[] { minDistance, minIndex };
 
 	}
-	// all members in nearest cell containing member
 
+//	Assume that all members are adjacent and that they are all adjacent to the nearest member from ethan
 	public static int[] calculateHeuristicOne(State state) {
 		MIState miState = (MIState) state;
 		int deathEstimate = 0;
@@ -668,6 +700,7 @@ public class MissionImpossible extends SearchProblem {
 		return new int[] { deathEstimate, damageEstimate };
 
 	}
+//	Same as heuristic one but with manhattan distance
 	public static int[] calculateHeuristicTwo(State state) {
 		MIState miState = (MIState) state;
 		int deathEstimate = 0;
@@ -712,68 +745,8 @@ public class MissionImpossible extends SearchProblem {
 		return new int[] { deathEstimate, damageEstimate };
 
 	}
-//	public static int[] calculateHeuristicOne(State state) {
-//		System.out.println("Heur 1");
-//		MIState miState = (MIState) state;
-//		int[] tempHealth = miState.getMemberHealth();
-//		int[] membersRow = miState.getMemberRow();
-//		int[] membersCol = miState.getMemberColumn();
-//		int deaths = 0; // get deaths at this state
-//		int damageEstimate = 0;
-//		int tempDamageTaken = 0;
-//		int distanceToMember = 0;
-//		for (int i = 0; i < numberOfMembers; i++) {
-//			tempDamageTaken = 0;
-//			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
-//				distanceToMember = calculateEuclideanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
-//						miState.getEthanColumn());
-//				tempDamageTaken = distanceToMember * 2;
-//				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
-//					tempDamageTaken = 100;
-//					deaths++;
-//				} else {
-//					tempDamageTaken += tempHealth[i];
-//				}
-//			} else { // member not on grid
-//				tempDamageTaken = 0;
-//			}
-//			damageEstimate += tempDamageTaken;
-//		}
-//		return new int[] { deaths, damageEstimate };
-//
-//	}
 
-//	public static int[] calculateHeuristicTwo(State state) {
-//		MIState miState = (MIState) state;
-//		int[] tempHealth = miState.getMemberHealth();
-//		int[] membersRow = miState.getMemberRow();
-//		int[] membersCol = miState.getMemberColumn();
-//		String tempIsMemberSaved = miState.getIsMemberSaved();
-//		int deaths = getDead((MIState) state); // get deaths at this state
-//		int damageEstimate = 0;
-//		int tempDamageTaken = 0;
-//		int distanceToMember = 0;
-//		for (int i = 0; i < numberOfMembers; i++) {
-//			tempDamageTaken = 0;
-//			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
-//				distanceToMember = calculateManhattanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
-//						miState.getEthanColumn());
-//				tempDamageTaken = distanceToMember * 2;
-//				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
-//					tempDamageTaken = 100;
-//					deaths++;
-//				} else {
-//					tempDamageTaken += tempHealth[i];
-//				}
-//			} else { // member not on grid
-//				tempDamageTaken = tempHealth[i];
-//			}
-//			damageEstimate += tempDamageTaken;
-//		}
-//		return new int[] { deaths, damageEstimate };
-//
-//	}
-
+// Recursive call to print the grids of a flow
 	public static void printFlow(STNode node) {
 		if (node == null) {
 			return;
@@ -782,7 +755,7 @@ public class MissionImpossible extends SearchProblem {
 			printGrid(node.getState());
 		}
 	}
-
+//prints grid of a given state
 	public static void printGrid(State state) {
 		MIState nextState = (MIState) state;
 		Cell[][] tempField = new Cell[gridRows][gridColumns];

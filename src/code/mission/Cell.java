@@ -1,5 +1,5 @@
 package code.mission;
-
+// Cell data type that is used in representing the grid as a 2d array of cells
 public class Cell {
 	Occupant occupant;
 	Occupant occupant2;

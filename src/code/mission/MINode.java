@@ -1,5 +1,5 @@
 package code.mission;
-
+// Subclass of the STNode , specific for the Mission Impossible problem
 import code.generic.STNode;
 import code.generic.State;
 

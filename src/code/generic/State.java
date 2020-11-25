@@ -1,7 +1,7 @@
 package code.generic;
 
 public abstract class State {
-protected String state;
+protected String state; //String representation of the state
 
 public String getState() {
 	return state;

@@ -1,5 +1,5 @@
 package code.generic;
-
+// Abstract data type for the STNode object
 import code.mission.Operator;
 
 public abstract class STNode implements Comparable {
@@ -7,6 +7,7 @@ public abstract class STNode implements Comparable {
 	int id;
 	int pathCost; // From root
 	protected int costFromParent; // from parent
+	int depth;
 	int[] heuristicCost;
 	protected STNode parent;
 
@@ -56,7 +57,7 @@ public abstract class STNode implements Comparable {
 		this.depth = depth;
 	}
 
-	int depth;
+	
 
 	public int getCostFromRoot() {
 		if (parent == null) {
@@ -137,9 +138,7 @@ public abstract class STNode implements Comparable {
 		return this.parent.getNthAncestor(--n);
 	}
 
-	public String getPlan() {
-		// Souidan
-
+	public String getPlan() { // Get plan from initial Node up till this node
 		if (this.getParent() == null) {
 			return "";
 		} else {
