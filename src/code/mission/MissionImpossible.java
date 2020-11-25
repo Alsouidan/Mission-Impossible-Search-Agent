@@ -608,31 +608,31 @@ public class MissionImpossible extends SearchProblem {
 
 	public static int[] calculateHeuristicTwo(State state) {
 		MIState miState = (MIState) state;
+		int[] tempHealth = miState.getMemberHealth();
 		int[] membersRow = miState.getMemberRow();
 		int[] membersCol = miState.getMemberColumn();
-		int deaths = getDead((MIState) state);
+		String tempIsMemberSaved = miState.getIsMemberSaved();
+		int deaths = getDead((MIState) state); // get deaths at this state
 		int damageEstimate = 0;
 		int tempDamageTaken = 0;
-		// get distance from each member to submarine
 		int distanceToMember = 0;
 		for (int i = 0; i < numberOfMembers; i++) {
 			tempDamageTaken = 0;
-			if (membersRow[i] != -1) {
+			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
 				distanceToMember = calculateManhattanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
 						miState.getEthanColumn());
 				tempDamageTaken = distanceToMember * 2;
-				if (tempDamageTaken + miState.getMemberHealth()[i] >= 100) {
-					tempDamageTaken = 100 - miState.getMemberHealth()[i];
+				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
+					tempDamageTaken = 100;
 					deaths++;
+				} else {
+					tempDamageTaken += tempHealth[i];
 				}
-			} else {
-				tempDamageTaken = miState.getMemberHealth()[i] - memberHealth[i];
+			} else { // member not on grid
+				tempDamageTaken = tempHealth[i];
 			}
 			damageEstimate += tempDamageTaken;
 		}
-//		System.out.println("Heuristic Damage : "+damageEstimate);
-//		System.out.println("Heuristic Deaths : "+deaths);
-
 		return new int[] { deaths, damageEstimate };
 
 	}
