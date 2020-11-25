@@ -49,7 +49,7 @@ public class MissionImpossible extends SearchProblem {
 //		****************************************************()	
 		expandedNodes = 0;
 		includeHeuristic = false;
-		heuristicType = false; // Heuristic One is false
+		heuristicType = false; // Heuristic One is true
 		System.out.println(grid);
 		String[] splitted = grid.split(";");
 		String[] temp = splitted[0].split(",");
@@ -120,7 +120,12 @@ public class MissionImpossible extends SearchProblem {
 				heuristicCost = calculateHeuristicTwo(initialState);
 			}
 		}
-		STNode initialNode = new MINode(initialState, idSoFar++, 0, 0, heuristicCost, null, null, 0,
+		int totalHealths = 0;
+		for (int i = 0; i < memberHealth.length; i++) {
+			totalHealths += memberHealth[i];
+		}
+		System.out.println(totalHealths);
+		STNode initialNode = new MINode(initialState, idSoFar++, totalHealths, 0, heuristicCost, null, null, 0,
 				getDead((MIState) initialState));
 		queue.add(initialNode);
 		MissionImpossible missionImpossible = new MissionImpossible(initialState, null, queue, null);
@@ -134,21 +139,26 @@ public class MissionImpossible extends SearchProblem {
 //			System.out.println(solution.getId());
 //			System.out.println(solution.getPlan());
 //			System.out.println(solution.getDepth());
-			MIState mi=(MIState) solution.getState();
+			MIState mi = (MIState) solution.getState();
 			System.out.println("Deaths:");
 			System.out.println(getDead((MIState) solution.getState()));
 			System.out.println("Cost");
 			System.out.println(solution.getPathCost());
 			System.out.println("Total Healths");
-			int total=0;
-			for(int i=0;i<mi.getMemberHealth().length;i++) {
-				total+=mi.getMemberHealth()[i];
+			int total = 0;
+			for (int i = 0; i < mi.getMemberHealth().length; i++) {
+				total += mi.getMemberHealth()[i];
 			}
 			System.out.println(total);
-			
+
 //			System.out.println(expandedNodes);
 		}
 		MIState miSolution = (MIState) solution.getState();
+		STNode currNode=solution;
+		String visuals="";
+		if(visualize) {
+			printFlow(solution);
+		}
 		String plan = solution.getPlan().toLowerCase();
 		return plan.substring(0, plan.length() - 1) + ";" + getDead(miSolution) + ";"
 				+ Arrays.toString(miSolution.getMemberHealth()).replaceAll("[\\[\\]\\s]", "") + ";" + expandedNodes;
@@ -226,16 +236,17 @@ public class MissionImpossible extends SearchProblem {
 		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
 		String grid10 = "10,10;6,3;4,8;9,1,2,4,4,0,3,9,6,4,3,4,0,5,1,6,1,9;97,49,25,17,94,3,96,35,98;3";
 		System.out.println("UCS 5");
-		System.out.println(solve(grid5, "UC", false));
-		System.out.println(solve(grid5,"A1",false));
-		System.out.println(solve(grid5,"G1",false));
+//		System.out.println(solve(grid5, "UC", false));
+
 //		System.out.println("UCS 14");
-//		System.out.println(solve(grid14,"UC",false));
+		System.out.println(solve(grid5, "BF", true));
+//		System.out.println(solve(grid5, "A1", false));
+//		System.out.println(solve(grid5, "G1", false));
 //		System.out.println("UCS 10");
 //		System.out.println(solve(grid10,"UC",false));
-//		System.out.println("A Star");
+		System.out.println("A Star");
 //		System.out.println(solve(grid5, "A1", false));
-//		System.out.println("Greedy");
+		System.out.println("Greedy");
 //		System.out.println(solve(grid5, "G1", false));
 	}
 
@@ -401,8 +412,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = Arrays.copyOf(currentState.getMemberHealth(), numberOfMembers);
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -454,13 +464,19 @@ public class MissionImpossible extends SearchProblem {
 		int[] heuristicCost = null;
 		if (includeHeuristic) {
 			if (heuristicType) {
-				heuristicCost = calculateHeuristicOne(state);
+				heuristicCost = calculateHeuristicOne(nextState);
 			} else {
-				heuristicCost = calculateHeuristicTwo(state);
+				heuristicCost = calculateHeuristicTwo(nextState);
 			}
 		}
-//		System.out.println("Health incurred is : "+node.getCost() + healthGained);
+//		System.out.println(Arrays.toString(tempHealth));
+//		System.out.println(healthGained);
+//		System.out.println(node.getCost());
+//		System.out.println("Health incurred is : "+(node.getCost() + healthGained));
 //		System.out.println("Deaths:" +getDead(nextState));
+		if (includeHeuristic && getDead(nextState) == heuristicCost[0]
+				&& (node.getCost() + healthGained) < heuristicCost[1])
+			System.out.println("Overshoot");
 		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, heuristicCost, node,
 				operator, node.getDepth() + 1, getDead(nextState));
 	}
@@ -523,7 +539,7 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return -1;
 	}
-
+	
 	public static String binaryOr(String s1, String s2) {
 		String s3 = "";
 		for (int i = 0; i < numberOfMembers; i++) {
@@ -564,32 +580,31 @@ public class MissionImpossible extends SearchProblem {
 
 	public static int[] calculateHeuristicOne(State state) {
 		MIState miState = (MIState) state;
+		int[] tempHealth = miState.getMemberHealth();
 		int[] membersRow = miState.getMemberRow();
 		int[] membersCol = miState.getMemberColumn();
-		int deaths = getDead((MIState) state);
+		String tempIsMemberSaved = miState.getIsMemberSaved();
+		int deaths = getDead((MIState) state); // get deaths at this state
 		int damageEstimate = 0;
 		int tempDamageTaken = 0;
-		// get distance from each member to submarine
 		int distanceToMember = 0;
 		for (int i = 0; i < numberOfMembers; i++) {
 			tempDamageTaken = 0;
-			if (membersRow[i] != -1) {
+			if (membersRow[i] != -1 && tempHealth[i] <= 100) { //Member  on grid
 				distanceToMember = calculateEuclideanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
 						miState.getEthanColumn());
 				tempDamageTaken = distanceToMember * 2;
-				if (tempDamageTaken + miState.getMemberHealth()[i] >= 100) {
-					tempDamageTaken = 100 - miState.getMemberHealth()[i];
+				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
+					tempDamageTaken = 100;
 					deaths++;
+				} else {
+					tempDamageTaken += tempHealth[i];
 				}
-			}
-			else {
-				tempDamageTaken=miState.getMemberHealth()[i]-memberHealth[i];
+			} else { // member not on grid
+				tempDamageTaken = tempHealth[i];
 			}
 			damageEstimate += tempDamageTaken;
 		}
-//		System.out.println("Heuristic Damage : "+damageEstimate);
-//		System.out.println("Heuristic Deaths : "+deaths);
-		
 		return new int[] { deaths, damageEstimate };
 
 	}
@@ -613,16 +628,53 @@ public class MissionImpossible extends SearchProblem {
 					tempDamageTaken = 100 - miState.getMemberHealth()[i];
 					deaths++;
 				}
-			}
-			else {
-				tempDamageTaken=miState.getMemberHealth()[i]-memberHealth[i];
+			} else {
+				tempDamageTaken = miState.getMemberHealth()[i] - memberHealth[i];
 			}
 			damageEstimate += tempDamageTaken;
 		}
 //		System.out.println("Heuristic Damage : "+damageEstimate);
 //		System.out.println("Heuristic Deaths : "+deaths);
-		
+
 		return new int[] { deaths, damageEstimate };
 
+	}
+	public static void printFlow(STNode node) {
+		if(node==null) {
+			return;
+		}
+		else {
+			printFlow(node.getParent());
+			printGrid(node.getState());
+		}
+	}
+	public static void printGrid(State state) {
+		MIState nextState=(MIState)state;
+		Cell [][]tempField = new Cell[gridRows][gridColumns];
+		for (int i = 0; i < gridRows; i++) {
+			for (int j = 0; j < gridColumns; j++) {
+				tempField[i][j] = new Cell(i, j);
+			}
+		}
+		for (int i = 0; i < numberOfMembers; i++) {
+			if (nextState.getMemberRow()[i] == -1)
+				continue;
+			tempField[nextState.getMemberRow()[i]][nextState.getMemberColumn()[i]]
+					.setOccupant(new Member(nextState.getMemberHealth()[i]));
+		}
+		tempField[submarineRow][submarineColumn].setOccupant(new Submarine());
+		if (tempField[nextState.getEthanRow()][nextState.getEthanColumn()].getOccupant() != null) {
+			tempField[nextState.getEthanRow()][nextState.getEthanColumn()].setOccupant2(new Ethan());
+		} else {
+			tempField[nextState.getEthanRow()][nextState.getEthanColumn()].setOccupant(new Ethan());
+		}
+		System.out.println("********************************************");
+		for (int i = 0; i < gridRows; i++) {
+			for (int j = 0; j < gridColumns; j++) {
+				System.out.print(tempField[i][j]);
+			}
+			System.out.println("");
+		}
+		System.out.println("***************************************");
 	}
 }
