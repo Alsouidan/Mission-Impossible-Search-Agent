@@ -1,17 +1,21 @@
 package code.generic;
 
-
 import code.mission.Operator;
 
 public abstract class STNode implements Comparable {
 	State state;
 	int id;
-	int pathCost;  //From root
-	protected int costFromParent; //from parent
-	int heuristicCost;
+	int pathCost; // From root
+	protected int costFromParent; // from parent
+	int[] heuristicCost;
 	protected STNode parent;
+
 	protected abstract int compareToWithCost(STNode otherNode);
-	Operator operator; //applied on parent to get this node
+
+	protected abstract int compareAStar(STNode otherNode);
+
+	Operator operator; // applied on parent to get this node
+
 	public int getId() {
 		return id;
 	}
@@ -53,13 +57,14 @@ public abstract class STNode implements Comparable {
 	}
 
 	int depth;
+
 	public int getCostFromRoot() {
-		if(parent==null) {
+		if (parent == null) {
 			return 0;
 		}
-		return costFromParent+parent.getCostFromRoot();
+		return costFromParent + parent.getCostFromRoot();
 	}
-	
+
 	public State getState() {
 		return state;
 	}
@@ -76,11 +81,11 @@ public abstract class STNode implements Comparable {
 		this.pathCost = pathCost;
 	}
 
-	public int getHeuristicCost() {
+	public int[] getHeuristicCost() {
 		return heuristicCost;
 	}
 
-	public void setHeuristicCost(int heuristicCost) {
+	public void setHeuristicCost(int[] heuristicCost) {
 		this.heuristicCost = heuristicCost;
 	}
 
@@ -92,26 +97,24 @@ public abstract class STNode implements Comparable {
 		this.parent = parent;
 	}
 
-	
 	@Override
 	public int compareTo(Object arg0) {
-		STNode otherNode=(STNode)arg0;
-		if(otherNode.depth<this.depth) {
+		STNode otherNode = (STNode) arg0;
+		if (otherNode.depth < this.depth) {
 			return 1;
-		}
-		else {
-			if(otherNode.depth>this.depth) {
+		} else {
+			if (otherNode.depth > this.depth) {
 				return -1;
-			}
-			else {
-				if(otherNode.id<this.id)
+			} else {
+				if (otherNode.id < this.id)
 					return 1;
 				else
 					return -1;
 			}
 		}
 	}
- public STNode(State state, int id, int pathCost, int costFromParent, int heuristicCost, STNode parent,
+
+	public STNode(State state, int id, int pathCost, int costFromParent, int[] heuristicCost, STNode parent,
 			Operator operator, int depth) {
 		super();
 		this.state = state;
@@ -124,27 +127,25 @@ public abstract class STNode implements Comparable {
 		this.depth = depth;
 	}
 
-public STNode getNthAncestor(int n) {
-	 if(n>this.depth) {
-		 return null; // No Ancestor at N
-	 }
-	 if(n==0) {
-		 return this;
-	 }
-	 return this.parent.getNthAncestor(--n);
- } 
-
-public String getPlan() {
-	// Souidan
-
-	if (this.getParent() == null)
-	{
-		return "";
+	public STNode getNthAncestor(int n) {
+		if (n > this.depth) {
+			return null; // No Ancestor at N
+		}
+		if (n == 0) {
+			return this;
+		}
+		return this.parent.getNthAncestor(--n);
 	}
-	else {
-		return this.getParent().getPlan() +this.getOperator()+",";		
+
+	public String getPlan() {
+		// Souidan
+
+		if (this.getParent() == null) {
+			return "";
+		} else {
+			return this.getParent().getPlan() + this.getOperator() + ",";
+		}
+
 	}
-	
-}
 
 }

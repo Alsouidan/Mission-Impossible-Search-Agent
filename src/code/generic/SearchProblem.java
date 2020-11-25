@@ -35,7 +35,7 @@ public abstract class SearchProblem {
 		STNode curr = null;
 		STNode tempNode = null;
 		int iterativeDepthSearhCounter = 0;
-		int stepSize=1;
+		int stepSize = 1;
 		if (strategy.equals("ID")) {
 			STNode root = queue.remove();
 			System.out.println(root);
@@ -67,8 +67,8 @@ public abstract class SearchProblem {
 					}
 
 				}
-				stepSize=(1+(iterativeDepthSearhCounter/10));
-				iterativeDepthSearhCounter+=stepSize;
+				stepSize = (1 + (iterativeDepthSearhCounter / 10));
+				iterativeDepthSearhCounter += stepSize;
 				visitedStates.clear();
 			}
 		} else {
@@ -81,14 +81,9 @@ public abstract class SearchProblem {
 //				Collections.shuffle(operators);
 				for (int i = 0; i < operators.size(); i++) {
 					tempNode = applyOperator(curr, operators.get(i));
-					if (strategy.equals("IDF")) {
-						if (tempNode != null && tempNode.getDepth() <= iterativeDepthSearhCounter) {
-							queue.add(tempNode);
-						}
-					} else {
-						if (tempNode != null) {
-							queue.add(tempNode);
-						}
+
+					if (tempNode != null) {
+						queue.add(tempNode);
 					}
 
 				}
