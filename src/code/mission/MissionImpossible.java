@@ -37,7 +37,7 @@ public class MissionImpossible extends SearchProblem {
 	static int numberOfMembers;
 	static int membersOnTruck;
 	static ArrayList<Integer> truckMembers;
-	static int healthGained; 
+	static int healthGained;
 	static int memberAtEthan;
 	static int idSoFar;
 	static String zeroString;
@@ -97,16 +97,16 @@ public class MissionImpossible extends SearchProblem {
 		case "UC":
 			queue = new PriorityQueue<STNode>(new NodeCostComparator());
 			break;
-		case "G1":
+		case "GR1":
 			heuristicType = true;
 
-		case "G2":
+		case "GR2":
 			includeHeuristic = true;
 			queue = new PriorityQueue<STNode>(new NodeHeuristicComparator());
 			break;
-		case "A1":
+		case "AS1":
 			heuristicType = true;
-		case "A2":
+		case "AS2":
 			includeHeuristic = true;
 			queue = new PriorityQueue<STNode>(new NodeAStarComparator());
 			break; // change to A* Comparator
@@ -154,9 +154,9 @@ public class MissionImpossible extends SearchProblem {
 //			System.out.println(expandedNodes);
 		}
 		MIState miSolution = (MIState) solution.getState();
-		STNode currNode=solution;
-		String visuals="";
-		if(visualize) {
+		STNode currNode = solution;
+		String visuals = "";
+		if (visualize) {
 			printFlow(solution);
 		}
 		String plan = solution.getPlan().toLowerCase();
@@ -306,8 +306,7 @@ public class MissionImpossible extends SearchProblem {
 
 			for (int i = 0; i < numberOfMembers; i++) {
 
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -338,8 +337,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -361,8 +359,7 @@ public class MissionImpossible extends SearchProblem {
 			tempTruckMembers = currentState.getTruckMembers();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -385,8 +382,7 @@ public class MissionImpossible extends SearchProblem {
 
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -414,8 +410,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -441,8 +436,7 @@ public class MissionImpossible extends SearchProblem {
 			tempHealth = currentState.getMemberHealth();
 			healthGained = 0;
 			for (int i = 0; i < numberOfMembers; i++) {
-				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0'
-						&& tempHealth[i] <= 99) {
+				if (tempTruckMembers.charAt(i) == '0' && tempIsMemberSaved.charAt(i) == '0' && tempHealth[i] <= 99) {
 					if (tempHealth[i] == 99) {
 						tempHealth[i] += 1;
 						healthGained++;
@@ -542,7 +536,7 @@ public class MissionImpossible extends SearchProblem {
 		}
 		return -1;
 	}
-	
+
 	public static String binaryOr(String s1, String s2) {
 		String s3 = "";
 		for (int i = 0; i < numberOfMembers; i++) {
@@ -593,7 +587,7 @@ public class MissionImpossible extends SearchProblem {
 		int distanceToMember = 0;
 		for (int i = 0; i < numberOfMembers; i++) {
 			tempDamageTaken = 0;
-			if (membersRow[i] != -1 && tempHealth[i] <= 100) { //Member  on grid
+			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
 				distanceToMember = calculateEuclideanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
 						miState.getEthanColumn());
 				tempDamageTaken = distanceToMember * 2;
@@ -642,18 +636,19 @@ public class MissionImpossible extends SearchProblem {
 		return new int[] { deaths, damageEstimate };
 
 	}
+
 	public static void printFlow(STNode node) {
-		if(node==null) {
+		if (node == null) {
 			return;
-		}
-		else {
+		} else {
 			printFlow(node.getParent());
 			printGrid(node.getState());
 		}
 	}
+
 	public static void printGrid(State state) {
-		MIState nextState=(MIState)state;
-		Cell [][]tempField = new Cell[gridRows][gridColumns];
+		MIState nextState = (MIState) state;
+		Cell[][] tempField = new Cell[gridRows][gridColumns];
 		for (int i = 0; i < gridRows; i++) {
 			for (int j = 0; j < gridColumns; j++) {
 				tempField[i][j] = new Cell(i, j);
