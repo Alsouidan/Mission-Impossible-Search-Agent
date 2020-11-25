@@ -142,16 +142,10 @@ public class MissionImpossible extends SearchProblem {
 			MIState mi = (MIState) solution.getState();
 			System.out.println("Deaths:");
 			System.out.println(getDead((MIState) solution.getState()));
-			System.out.println("Cost");
+			System.out.println("Damage");
 			System.out.println(solution.getPathCost());
-			System.out.println("Total Healths");
-			int total = 0;
-			for (int i = 0; i < mi.getMemberHealth().length; i++) {
-				total += mi.getMemberHealth()[i];
-			}
-			System.out.println(total);
-
-//			System.out.println(expandedNodes);
+			System.out.println("Expanded nodes");
+			System.out.println(expandedNodes);
 		}
 		MIState miSolution = (MIState) solution.getState();
 		STNode currNode = solution;
@@ -233,15 +227,25 @@ public class MissionImpossible extends SearchProblem {
 
 	public static void main(String[] args) {
 		String grid5 = "5,5;2,1;1,0;1,3,4,2,4,1,3,1;54,31,39,98;2";
-		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
+		String grid6 = "6,6;1,1;3,3;3,5,0,1,2,4,4,3,1,5;4,43,94,40,92;3";
+		String grid7 = "7,7;1,6;5,4;2,2,1,4,0,3,2,3,0,1,4,5;6,44,82,49,24,54;4";
+		String grid8 = "8,8;4,2;7,4;5,1,7,7,4,0,6,7;93,85,72,78;1";
+		String grid9 = "9,9;8,7;5,0;0,8,2,6,5,6,1,7,5,5,8,3,2,2,2,5,0,7;11,13,75,50,56,44,26,77,18;2";
 		String grid10 = "10,10;6,3;4,8;9,1,2,4,4,0,3,9,6,4,3,4,0,5,1,6,1,9;97,49,25,17,94,3,96,35,98;3";
+		String grid11 = "11,11;7,7;8,8;9,7,7,4,7,6,9,6,9,5,9,1,4,5,3,10,5,10;14,3,96,89,61,22,17,70,83;5";
+		String grid12 = "12,12;7,7;10,6;0,4,2,2,1,3,8,2,4,2,9,3;95,4,68,2,94,91;5";
+		String grid13 = "13,13;7,4;4,0;9,3,3,9,12,7,7,9,3,12,11,8,4,2,12,6;22,62,74,56,43,70,17,14;4";
+		String grid14 = "14,14;13,9;1,13;5,3,9,7,11,10,8,3,10,7,13,6,11,1,5,2;76,30,2,49,63,43,72,1;6";
+		String grid15 = "15,15;5,10;14,14;0,0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8;81,13,40,38,52,63,66,36,13;1";
+
 		System.out.println("UCS 5");
 //		System.out.println(solve(grid5, "UC", false));
 
 //		System.out.println("UCS 14");
-		System.out.println(solve(grid5, "BF", true));
-//		System.out.println(solve(grid5, "A1", false));
-//		System.out.println(solve(grid5, "G1", false));
+//		System.out.println();
+		System.out.println(solve(grid5, "BF", false));
+		System.out.println(solve(grid5, "DF", false));
+//		System.out.println(solve(grid6, "GR1", false));
 //		System.out.println("UCS 10");
 //		System.out.println(solve(grid10,"UC",false));
 		System.out.println("A Star");
@@ -471,9 +475,6 @@ public class MissionImpossible extends SearchProblem {
 //		System.out.println(node.getCost());
 //		System.out.println("Health incurred is : "+(node.getCost() + healthGained));
 //		System.out.println("Deaths:" +getDead(nextState));
-		if (includeHeuristic && getDead(nextState) == heuristicCost[0]
-				&& (node.getCost() + healthGained) < heuristicCost[1])
-			System.out.println("Overshoot");
 		return new MINode(nextState, idSoFar++, node.getCost() + healthGained, healthGained, heuristicCost, node,
 				operator, node.getDepth() + 1, getDead(nextState));
 	}
@@ -575,67 +576,203 @@ public class MissionImpossible extends SearchProblem {
 		return (int) Math.sqrt(deltaXSquared + deltaYSquared);
 	}
 
+	public static int[] findNearestMember(MIState miState) {
+		int[] tempMemberRow = miState.getMemberRow();
+		int[] tempMemberColumn = miState.getMemberColumn();
+		int tempDistance = 0;
+		int minDistance = 15 * 16;
+		int minIndex = -1;
+		for (int i = 0; i < tempMemberRow.length; i++) {
+			if (tempMemberRow[i] != -1) {
+				tempDistance = calculateEuclideanDistance(miState.getEthanRow(), tempMemberRow[i],
+						miState.getEthanColumn(), tempMemberColumn[i]);
+				if (tempDistance < minDistance) {
+					minDistance = tempDistance;
+					minIndex = i;
+				}
+			}
+			if (minDistance == 15 * 16) {
+				minDistance = 0;
+			}
+		}
+//		System.out.println(minDistance);
+		return new int[] { minDistance, minIndex };
+
+	}
+	public static int[] findNearestMember2(MIState miState) {
+		int[] tempMemberRow = miState.getMemberRow();
+		int[] tempMemberColumn = miState.getMemberColumn();
+		int tempDistance = 0;
+		int minDistance = 15 * 16;
+		int minIndex = -1;
+		for (int i = 0; i < tempMemberRow.length; i++) {
+			if (tempMemberRow[i] != -1) {
+				tempDistance = calculateManhattanDistance(miState.getEthanRow(), tempMemberRow[i],
+						miState.getEthanColumn(), tempMemberColumn[i]);
+				if (tempDistance < minDistance) {
+					minDistance = tempDistance;
+					minIndex = i;
+				}
+			}
+			if (minDistance == 15 * 16) {
+				minDistance = 0;
+			}
+		}
+//		System.out.println(minDistance);
+		return new int[] { minDistance, minIndex };
+
+	}
+	// all members in nearest cell containing member
+
 	public static int[] calculateHeuristicOne(State state) {
 		MIState miState = (MIState) state;
-		int[] tempHealth = miState.getMemberHealth();
-		int[] membersRow = miState.getMemberRow();
-		int[] membersCol = miState.getMemberColumn();
-		String tempIsMemberSaved = miState.getIsMemberSaved();
-		int deaths = getDead((MIState) state); // get deaths at this state
+		int deathEstimate = 0;
 		int damageEstimate = 0;
-		int tempDamageTaken = 0;
-		int distanceToMember = 0;
-		for (int i = 0; i < numberOfMembers; i++) {
-			tempDamageTaken = 0;
-			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
-				distanceToMember = calculateEuclideanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
-						miState.getEthanColumn());
-				tempDamageTaken = distanceToMember * 2;
-				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
-					tempDamageTaken = 100;
-					deaths++;
+		int tempDamage = 0;
+		int[] tempMemberRow = miState.getMemberRow();
+		int[] tempHealth = miState.getMemberHealth();
+		int counter = 0;
+		String tempIsMemberSaved = miState.getIsMemberSaved();
+		String tempTruckMembers = miState.getTruckMembers();
+		int[] nearestResult = findNearestMember(miState);
+		int nearestMember = nearestResult[0];
+		int nearestIndex = nearestResult[1];
+		for (int i = 0; i < tempMemberRow.length; i++) {
+			if (tempMemberRow[i] != -1 && tempIsMemberSaved.charAt(i) == '0' && tempTruckMembers.charAt(i) == '0'
+					&& tempHealth[i] < 100) {
+				tempDamage = nearestMember * 2;
+				if (tempHealth[i] + tempDamage >= 100) {
+					damageEstimate += (100 - tempHealth[i]);
+					deathEstimate++;
 				} else {
-					tempDamageTaken += tempHealth[i];
+					damageEstimate += tempDamage;
 				}
-			} else { // member not on grid
-				tempDamageTaken = tempHealth[i];
 			}
-			damageEstimate += tempDamageTaken;
+
 		}
-		return new int[] { deaths, damageEstimate };
+		if (nearestIndex != -1)
+			tempMemberRow[nearestIndex] = -1;
+		for (int i = 0; i < tempHealth.length; i++) {
+			if (tempMemberRow[i] != -1 && tempIsMemberSaved.charAt(i) == '0' && tempTruckMembers.charAt(i) == '0'
+					&& tempHealth[i] < 100) {
+				tempDamage = 2 * counter;
+				if (tempDamage + tempHealth[i] >= 100) {
+					damageEstimate += (100 - tempHealth[i]);
+					deathEstimate++;
+				} else {
+					damageEstimate += tempDamage;
+				}
+				counter++;
+			}
+		}
+		return new int[] { deathEstimate, damageEstimate };
 
 	}
-
 	public static int[] calculateHeuristicTwo(State state) {
 		MIState miState = (MIState) state;
-		int[] tempHealth = miState.getMemberHealth();
-		int[] membersRow = miState.getMemberRow();
-		int[] membersCol = miState.getMemberColumn();
-		String tempIsMemberSaved = miState.getIsMemberSaved();
-		int deaths = getDead((MIState) state); // get deaths at this state
+		int deathEstimate = 0;
 		int damageEstimate = 0;
-		int tempDamageTaken = 0;
-		int distanceToMember = 0;
-		for (int i = 0; i < numberOfMembers; i++) {
-			tempDamageTaken = 0;
-			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
-				distanceToMember = calculateManhattanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
-						miState.getEthanColumn());
-				tempDamageTaken = distanceToMember * 2;
-				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
-					tempDamageTaken = 100;
-					deaths++;
+		int tempDamage = 0;
+		int[] tempMemberRow = miState.getMemberRow();
+		int[] tempHealth = miState.getMemberHealth();
+		int counter = 0;
+		String tempIsMemberSaved = miState.getIsMemberSaved();
+		String tempTruckMembers = miState.getTruckMembers();
+		int[] nearestResult = findNearestMember2(miState);
+		int nearestMember = nearestResult[0];
+		int nearestIndex = nearestResult[1];
+		for (int i = 0; i < tempMemberRow.length; i++) {
+			if (tempMemberRow[i] != -1 && tempIsMemberSaved.charAt(i) == '0' && tempTruckMembers.charAt(i) == '0'
+					&& tempHealth[i] < 100) {
+				tempDamage = nearestMember * 2;
+				if (tempHealth[i] + tempDamage >= 100) {
+					damageEstimate += (100 - tempHealth[i]);
+					deathEstimate++;
 				} else {
-					tempDamageTaken += tempHealth[i];
+					damageEstimate += tempDamage;
 				}
-			} else { // member not on grid
-				tempDamageTaken = tempHealth[i];
 			}
-			damageEstimate += tempDamageTaken;
+
 		}
-		return new int[] { deaths, damageEstimate };
+		if (nearestIndex != -1)
+			tempMemberRow[nearestIndex] = -1;
+		for (int i = 0; i < tempHealth.length; i++) {
+			if (tempMemberRow[i] != -1 && tempIsMemberSaved.charAt(i) == '0' && tempTruckMembers.charAt(i) == '0'
+					&& tempHealth[i] < 100) {
+				tempDamage = 2 * counter;
+				if (tempDamage + tempHealth[i] >= 100) {
+					damageEstimate += (100 - tempHealth[i]);
+					deathEstimate++;
+				} else {
+					damageEstimate += tempDamage;
+				}
+				counter++;
+			}
+		}
+		return new int[] { deathEstimate, damageEstimate };
 
 	}
+//	public static int[] calculateHeuristicOne(State state) {
+//		System.out.println("Heur 1");
+//		MIState miState = (MIState) state;
+//		int[] tempHealth = miState.getMemberHealth();
+//		int[] membersRow = miState.getMemberRow();
+//		int[] membersCol = miState.getMemberColumn();
+//		int deaths = 0; // get deaths at this state
+//		int damageEstimate = 0;
+//		int tempDamageTaken = 0;
+//		int distanceToMember = 0;
+//		for (int i = 0; i < numberOfMembers; i++) {
+//			tempDamageTaken = 0;
+//			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
+//				distanceToMember = calculateEuclideanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
+//						miState.getEthanColumn());
+//				tempDamageTaken = distanceToMember * 2;
+//				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
+//					tempDamageTaken = 100;
+//					deaths++;
+//				} else {
+//					tempDamageTaken += tempHealth[i];
+//				}
+//			} else { // member not on grid
+//				tempDamageTaken = 0;
+//			}
+//			damageEstimate += tempDamageTaken;
+//		}
+//		return new int[] { deaths, damageEstimate };
+//
+//	}
+
+//	public static int[] calculateHeuristicTwo(State state) {
+//		MIState miState = (MIState) state;
+//		int[] tempHealth = miState.getMemberHealth();
+//		int[] membersRow = miState.getMemberRow();
+//		int[] membersCol = miState.getMemberColumn();
+//		String tempIsMemberSaved = miState.getIsMemberSaved();
+//		int deaths = getDead((MIState) state); // get deaths at this state
+//		int damageEstimate = 0;
+//		int tempDamageTaken = 0;
+//		int distanceToMember = 0;
+//		for (int i = 0; i < numberOfMembers; i++) {
+//			tempDamageTaken = 0;
+//			if (membersRow[i] != -1 && tempHealth[i] <= 100) { // Member on grid
+//				distanceToMember = calculateManhattanDistance(membersRow[i], miState.getEthanRow(), membersCol[i],
+//						miState.getEthanColumn());
+//				tempDamageTaken = distanceToMember * 2;
+//				if (tempDamageTaken + tempHealth[i] >= 100) { // if health after estimated damage > 100
+//					tempDamageTaken = 100;
+//					deaths++;
+//				} else {
+//					tempDamageTaken += tempHealth[i];
+//				}
+//			} else { // member not on grid
+//				tempDamageTaken = tempHealth[i];
+//			}
+//			damageEstimate += tempDamageTaken;
+//		}
+//		return new int[] { deaths, damageEstimate };
+//
+//	}
 
 	public static void printFlow(STNode node) {
 		if (node == null) {
