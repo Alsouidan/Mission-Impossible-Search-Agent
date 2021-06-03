@@ -1,4 +1,2 @@
-# This is the starter code for Project 1
-
-### You should NOT alter the structure of any packages
-### You should NOT alter any tests
+## Mission Impossible Search Agent
+A Search agent that utilizez various search algorithms such as BFS,UCS and A* search to save members with an efficient plan.
